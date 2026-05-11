@@ -57,6 +57,7 @@ tr:hover td{background:var(--bg)}
 .inline-input{width:100%;min-width:120px;padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:12px;background:var(--surface);color:var(--text)}
 .inline-input.mono{font-family:'DM Mono',monospace}
 .hint{font-size:12px;color:var(--muted);margin-top:10px}
+.repeat-hint{font-size:11px;color:var(--muted);line-height:1.35;margin-top:-2px}
 .mobile-list{display:none}
 .booking-card{border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--surface);margin-bottom:10px}
 .booking-card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px}
@@ -99,7 +100,17 @@ tr:hover td{background:var(--bg)}
 .badge-yellow{background:#fff3cd;color:#7b5800}
 .badge-blue{background:#dbeafe;color:#1e3a5f}
 .prog-bar{background:var(--border);border-radius:20px;height:6px;overflow:hidden;margin-top:6px}
-.prog-fill{height:100%;border-radius:20px}
+.prog-fill{height:100%;border-radius:20px;transition:width .25s ease,background .25s ease}
+.quick-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 16px}
+.quick-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.quick-btn:hover{border-color:var(--accent);background:#eef7f1;transform:translateY(-1px)}
+.quick-btn .quick-icon{font-size:18px;line-height:1}
+.budget-monitor-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.monitor-item{border:1px solid var(--border);border-radius:10px;background:var(--surface);padding:14px}
+.monitor-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
+.monitor-title{font-size:14px;font-weight:700}
+.monitor-left{font-family:'DM Mono',monospace;font-size:13px;font-weight:600}
+.monitor-meta{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:11px;color:var(--muted)}
 .ziel-bar{background:var(--border);border-radius:20px;height:18px;overflow:hidden;margin-top:10px}
 .ziel-fill{height:100%;background:var(--accent);border-radius:20px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;transition:width .5s}
 .ziel-pct{font-size:10px;color:#fff;font-weight:700}
@@ -126,12 +137,18 @@ tr:hover td{background:var(--bg)}
   .page-header{margin-bottom:18px}
   .page-title{font-size:22px;line-height:1.2}
   .page-sub{font-size:12px;line-height:1.35}
-  .card{padding:14px;border-radius:10px;box-shadow:none}
+  .card{padding:16px;border-radius:10px;box-shadow:none}
   .grid-4,.grid-3,.grid-2,.form-grid{grid-template-columns:1fr;gap:12px;margin-bottom:16px}
   .stat-val{font-size:22px}
   .form-group{min-width:0}
-  .form-group input,.form-group select,.filter-bar input,.filter-bar select,.month-select select,.inline-input{width:100%;max-width:100%;min-width:0;min-height:42px;font-size:16px}
-  .btn{min-height:42px;padding:10px 14px;font-size:14px}
+  .form-group input,.form-group select,.filter-bar input,.filter-bar select,.month-select select,.inline-input{width:100%;max-width:100%;min-width:0;min-height:46px;font-size:16px;padding:11px 12px}
+  .btn{min-height:46px;padding:12px 16px;font-size:15px}
+  .quick-actions{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
+  .quick-btn{min-height:52px;font-size:13px;padding:10px 8px}
+  .quick-btn .quick-icon{font-size:20px}
+  .budget-monitor-list{grid-template-columns:1fr;gap:10px}
+  .monitor-item{padding:13px}
+  .main{font-size:15px}
   .btn-small{min-height:36px;padding:8px 10px;font-size:12px}
   .filter-bar{display:grid;grid-template-columns:1fr;gap:8px}
   .filter-bar input,.filter-bar select{width:100%;min-width:0!important}
@@ -198,6 +215,10 @@ tr:hover td{background:var(--bg)}
     <div class="card"><div class="stat-label">💾 Sparbetrag</div><div class="stat-val blue" id="d-spar">–</div></div>
     <div class="card"><div class="stat-label">📈 Sparquote</div><div class="stat-val" id="d-quote">–</div></div>
   </div>
+  <div class="card budget-monitor-card" style="margin-bottom:24px">
+    <div class="section-header"><div class="card-title" style="margin:0">Budget-Monitor</div><span style="font-size:12px;color:var(--muted)">Lebensmittel, Auto und Freizeit</span></div>
+    <div id="budget-monitor-list" class="budget-monitor-list"></div>
+  </div>
   <div class="grid-2">
     <div class="card"><div class="card-title">Ausgaben nach Kategorie</div><div class="chart-container"><canvas id="c-dash-pie"></canvas></div></div>
     <div class="card"><div class="card-title">Einnahmen vs. Ausgaben (alle Monate)</div><div class="chart-container"><canvas id="c-dash-bar"></canvas></div></div>
@@ -214,6 +235,12 @@ tr:hover td{background:var(--bg)}
   <div class="page-header"><div class="page-title">Buchungen</div><div class="page-sub">Alle Ein- und Ausgaben erfassen und verwalten</div></div>
   <div class="card" style="margin-bottom:24px">
     <div class="card-title">Neue Buchung</div>
+    <div class="quick-actions" aria-label="Schnellbuchungen">
+      <button class="quick-btn" type="button" onclick="prefillQuickBooking('baecker')" title="Bäcker"><span class="quick-icon">🥐</span><span>Bäcker</span></button>
+      <button class="quick-btn" type="button" onclick="prefillQuickBooking('supermarkt')" title="Supermarkt"><span class="quick-icon">🛒</span><span>Supermarkt</span></button>
+      <button class="quick-btn" type="button" onclick="prefillQuickBooking('tanken')" title="Tanken"><span class="quick-icon">⛽</span><span>Tanken</span></button>
+      <button class="quick-btn" type="button" onclick="prefillQuickBooking('essen')" title="Essen"><span class="quick-icon">🍽️</span><span>Essen</span></button>
+    </div>
     <div class="form-grid">
       <div class="form-group"><label>Datum</label><input type="date" id="b-datum"></div>
       <div class="form-group"><label>Beschreibung</label><input type="text" id="b-desc" placeholder="z.B. Rewe Wocheneinkauf"></div>
@@ -223,6 +250,7 @@ tr:hover td{background:var(--bg)}
         <select id="b-zahlung"><option>Girokonto</option><option>Kreditkarte 1</option><option>Kreditkarte 2</option><option>Bar</option></select>
       </div>
       <div class="form-group"><label>Notiz</label><input type="text" id="b-notiz" placeholder="Optional..."></div>
+      <div class="form-group"><label>Fixkosten-Tag</label><input type="number" id="b-fix-day" min="1" max="31" placeholder="z.B. 15"><div class="repeat-hint">Nur für Kategorien aus der Gruppe Fixkosten. Leer = Tag aus Datum.</div></div>
     </div>
     <button class="btn btn-primary" onclick="addBuchung()">+ Buchung hinzufügen</button>
   </div>
@@ -237,6 +265,7 @@ tr:hover td{background:var(--bg)}
         <select id="e-zahlung"><option>Girokonto</option><option>Kreditkarte 1</option><option>Kreditkarte 2</option><option>Bar</option></select>
       </div>
       <div class="form-group"><label>Notiz</label><input type="text" id="e-notiz"></div>
+      <div class="form-group"><label>Fixkosten-Tag</label><input type="number" id="e-fix-day" min="1" max="31" placeholder="z.B. 15"><div class="repeat-hint">Nur für Kategorien aus der Gruppe Fixkosten. Leer = Tag aus Datum.</div></div>
     </div>
     <button class="btn btn-primary" onclick="saveBuchungEdit()">Änderungen speichern</button>
   </div>
@@ -311,7 +340,7 @@ tr:hover td{background:var(--bg)}
 <!-- SZENARIO -->
 <div id="page-szenario" class="page">
   <div class="page-header"><div class="page-title">Was-wäre-wenn Szenario</div><div class="page-sub">Simuliere finanzielle Änderungen</div></div>
-  <div class="grid-2">
+<div class="grid-2">
     <div class="card">
       <div class="card-title">Ist-Situation</div>
       <table style="margin-bottom:24px">
@@ -342,7 +371,7 @@ tr:hover td{background:var(--bg)}
 <!-- SPARZIEL -->
 <div id="page-sparziel" class="page">
   <div class="page-header"><div class="page-title">Sparziel-Rechner</div><div class="page-sub">Wann erreichst du dein Ziel?</div></div>
-  <div class="grid-2">
+<div class="grid-2">
     <div class="card">
       <div class="card-title">Ziel definieren</div>
       <div class="form-group" style="margin-bottom:16px"><label>Sparziel (€)</label><input type="number" id="ziel-bet" value="15000" oninput="renderSparziel()"></div>
@@ -392,7 +421,7 @@ tr:hover td{background:var(--bg)}
 <!-- GOOGLE DRIVE SYNC -->
 <div id="page-sync" class="page">
   <div class="page-header"><div class="page-title">Google Drive Sync</div><div class="page-sub">Gemeinsamer Datenstand für Desktop und Handy</div></div>
-  <div class="grid-2">
+<div class="grid-2">
     <div class="card">
       <div class="card-title">Verbindung</div>
       <table style="margin-bottom:18px">
@@ -447,6 +476,17 @@ const KATEGORIEN_DEFAULT = [
 ];
 
 let KATEGORIEN = JSON.parse(localStorage.getItem('kategorien') || 'null') || KATEGORIEN_DEFAULT.map(k=>({...k}));
+const BUDGET_MONITOR_GROUPS = [
+  {label:'Lebensmittel', keywords:['Lebensmittel']},
+  {label:'Auto', keywords:['KFZ','Tanken','Auto']},
+  {label:'Freizeit', keywords:['Freizeit','Restaurant']}
+];
+const QUICK_BOOKINGS = {
+  baecker:{desc:'Bäcker',betrag:-8.50,keywords:['Lebensmittel'],zahlung:'Bar'},
+  supermarkt:{desc:'Supermarkt',betrag:-65.00,keywords:['Lebensmittel'],zahlung:'Kreditkarte 1'},
+  tanken:{desc:'Tanken',betrag:-75.00,keywords:['Tanken','KFZ'],zahlung:'Kreditkarte 1'},
+  essen:{desc:'Essen / Restaurant',betrag:-45.00,keywords:['Freizeit','Restaurant'],zahlung:'Kreditkarte 1'}
+};
 let deletedBuchungIds = JSON.parse(localStorage.getItem('deletedBuchungIds') || '[]');
 
 const BUCHUNGEN_RAW = [
@@ -547,6 +587,94 @@ function getIstForMonatKat(monat, kat){
   return buchungen.filter(b=>b.datum.slice(0,7)===monat && b.kat===kat).reduce((s,b)=>s+b.betrag,0);
 }
 
+
+function budgetUsageColor(pctVal){
+  if(pctVal>=100) return '#c1121f';
+  if(pctVal>=80) return '#e9c46a';
+  return '#2d6a4f';
+}
+function findCategoryByKeywords(keywords){
+  const keys=(keywords||[]).map(k=>String(k).toLowerCase());
+  return KATEGORIEN.find(k=>keys.some(key=>k.name.toLowerCase().includes(key)))?.name || KATEGORIEN[0]?.name || '';
+}
+function categoriesForMonitor(group){
+  const keys=group.keywords.map(k=>String(k).toLowerCase());
+  return KATEGORIEN.filter(k=>keys.some(key=>k.name.toLowerCase().includes(key)));
+}
+function prefillQuickBooking(type){
+  const q=QUICK_BOOKINGS[type];
+  if(!q) return;
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('b-datum').value=today;
+  document.getElementById('b-desc').value=q.desc;
+  document.getElementById('b-betrag').value=q.betrag.toFixed(2);
+  document.getElementById('b-kat').value=findCategoryByKeywords(q.keywords);
+  document.getElementById('b-zahlung').value=q.zahlung;
+  document.getElementById('b-notiz').value='';
+  document.getElementById('b-betrag').focus();
+}
+function isFixkostenKategorie(kat){
+  return KATEGORIEN.some(k=>k.name===kat && k.gruppe==='Fixkosten');
+}
+function getFixkostenDayFromDate(dateValue){
+  const day=parseInt(String(dateValue||'').slice(8,10),10);
+  return Number.isFinite(day) ? Math.min(31,Math.max(1,day)) : 1;
+}
+function readFixkostenDay(inputId,dateValue){
+  const raw=parseInt(document.getElementById(inputId)?.value,10);
+  if(Number.isFinite(raw)) return Math.min(31,Math.max(1,raw));
+  return getFixkostenDayFromDate(dateValue);
+}
+function getRecurringTemplateKey(item){
+  return item.recurringFixkostenKey || ['fixkosten',item.kat,item.desc,Number(item.betrag).toFixed(2),item.zahlung].join('|').toLowerCase();
+}
+function getDateForMonthDay(monat,day){
+  const [year,month]=monat.split('-').map(Number);
+  const lastDay=new Date(year,month,0).getDate();
+  return monat+'-'+String(Math.min(Math.max(1,day),lastDay)).padStart(2,'0');
+}
+function getFixkostenTemplates(){
+  const templates=new Map();
+  buchungen.forEach(b=>{
+    if(b.autoFixkostenGenerated || b.autoFixkostenKey || !isFixkostenKategorie(b.kat) || Number(b.betrag)>=0) return;
+    const key=getRecurringTemplateKey(b);
+    const current=templates.get(key);
+    if(!current || String(b.updatedAt||b.datum||'').localeCompare(String(current.updatedAt||current.datum||''))>0){
+      templates.set(key,b);
+    }
+  });
+  return [...templates.entries()].map(([key,b])=>({key,...b,fixkostenDay:b.fixkostenDay||getFixkostenDayFromDate(b.datum)}));
+}
+function runFixkostenAutomatik(){
+  const now=new Date();
+  const monat=now.toISOString().slice(0,7);
+  const stamp=now.toISOString();
+  let added=0;
+  getFixkostenTemplates().forEach(item=>{
+    const datum=getDateForMonthDay(monat,item.fixkostenDay);
+    const autoKey='fixkosten-'+monat+'-'+item.key;
+    const exists=buchungen.some(b=>b.autoFixkostenKey===autoKey || (b.datum.slice(0,7)===monat && getRecurringTemplateKey(b)===item.key));
+    if(exists) return;
+    buchungen.push({id:nextId++,datum,desc:item.desc,kat:item.kat,betrag:Number(item.betrag),zahlung:item.zahlung,notiz:item.notiz||'Automatische Fixkosten',fixkostenDay:item.fixkostenDay,recurringFixkostenKey:item.key,autoFixkostenGenerated:true,autoFixkostenKey:autoKey,updatedAt:stamp});
+    added++;
+  });
+  localStorage.setItem('autoFixkostenLastMonth',monat);
+  if(added>0) save();
+}
+function renderBudgetMonitor(monat){
+  const el=document.getElementById('budget-monitor-list');
+  if(!el) return;
+  el.innerHTML=BUDGET_MONITOR_GROUPS.map(group=>{
+    const cats=categoriesForMonitor(group);
+    const budget=cats.reduce((sum,k)=>sum+Math.abs(Number(k.budget)||0),0);
+    const ist=cats.reduce((sum,k)=>sum+getIstForMonatKat(monat,k.name),0);
+    const spent=Math.abs(Math.min(0,ist));
+    const rest=budget-spent;
+    const pctVal=budget>0?(spent/budget)*100:0;
+    const color=budgetUsageColor(pctVal);
+    return `<div class="monitor-item"><div class="monitor-head"><div><div class="monitor-title">${esc(group.label)}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${cats.map(k=>esc(k.name)).join(', ')||'Keine Kategorie gefunden'}</div></div><div class="monitor-left ${rest<0?'neg':'pos'}">${eur(rest)}</div></div><div class="prog-bar" style="height:10px"><div class="prog-fill" style="width:${Math.min(pctVal,100)}%;background:${color}"></div></div><div class="monitor-meta"><span>${eur(spent)} von ${eur(budget)} genutzt</span><strong>${pctVal.toFixed(0)}%</strong></div></div>`;
+  }).join('');
+}
 function ampel(budget, ist){
   if(budget===0) return '<span style="color:var(--muted)">–</span>';
   const pctVal = budget>0 ? ist/budget : Math.abs(ist)/Math.abs(budget);
@@ -606,6 +734,7 @@ function renderDashboard(){
   document.getElementById('d-aus').textContent=eur(aus);
   document.getElementById('d-spar').textContent=eur(spar);
   document.getElementById('d-quote').textContent=pct(quote);
+  renderBudgetMonitor(m);
 
   // Pie
   const katAus=KATEGORIEN.filter(k=>k.gruppe!=='Einnahmen').map(k=>({name:k.name,val:Math.abs(getIstForMonatKat(m,k.name))})).filter(k=>k.val>0);
@@ -625,7 +754,7 @@ function renderDashboard(){
   tbody.innerHTML=KATEGORIEN.filter(k=>k.gruppe!=='Einnahmen').map(k=>{
     const ist=getIstForMonatKat(m,k.name);const bud=k.budget;const diff=ist-bud;
     const pctV=bud!==0?Math.abs(ist/bud)*100:0;
-    const barCol=pctV>100?'#c1121f':pctV>90?'#e9c46a':'#2d6a4f';
+    const barCol=budgetUsageColor(pctV);
     return `<tr><td>${k.name}</td><td class="mono ${ist<0?'neg':'pos'}">${eur(ist)}</td><td class="mono">${eur(bud)}</td><td class="mono ${diff>=0?'pos':'neg'}">${eur(diff)}</td>
     <td style="min-width:120px"><div style="font-size:11px;margin-bottom:3px">${pctV.toFixed(0)}%</div><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pctV,100)}%;background:${barCol}"></div></div></td>
     <td>${ampel(bud,ist)}</td></tr>`;
@@ -643,7 +772,7 @@ function addBuchung(){
   if(!dat||!desc||isNaN(bet)){alert('Bitte Datum, Beschreibung und Betrag ausfüllen.');return;}
   buchungen.push({id:nextId++,datum:dat,desc,kat,betrag:bet,zahlung:zahl,notiz,updatedAt:new Date().toISOString()});
   refreshViews();
-  document.getElementById('b-desc').value='';document.getElementById('b-betrag').value='';document.getElementById('b-notiz').value='';
+  document.getElementById('b-desc').value='';document.getElementById('b-betrag').value='';document.getElementById('b-notiz').value='';document.getElementById('b-fix-day').value='';
 }
 
 function startEditBuchung(id){
@@ -659,6 +788,7 @@ function startEditBuchung(id){
   document.getElementById('e-betrag').value=b.betrag;
   document.getElementById('e-zahlung').value=b.zahlung;
   document.getElementById('e-notiz').value=b.notiz||'';
+  document.getElementById('e-fix-day').value=b.fixkostenDay||getFixkostenDayFromDate(b.datum);
   const card=document.getElementById('edit-buchung-card');
   card.style.display='block';
   card.scrollIntoView({behavior:'smooth',block:'start'});
@@ -759,7 +889,7 @@ function renderBudget(){
     const diff=ist-bud;
     totBud+=bud;totIst+=ist;
     const pctV=bud!==0?Math.abs(ist/bud)*100:0;
-    const barCol=pctV>100?'#c1121f':pctV>90?'#e9c46a':'#2d6a4f';
+    const barCol=budgetUsageColor(pctV);
     budgetCards.push(`<div class="budget-card">
       <div class="budget-card-head"><div><div class="budget-card-title">${esc(k.name)}</div><span class="badge badge-blue" style="font-size:10px">${esc(k.gruppe)}</span></div><div>${ampel(bud,ist)}</div></div>
       <div class="budget-card-grid"><div><span>Budget</span><strong class="mono">${eur(bud)}</strong></div><div><span>Ist</span><strong class="mono ${ist<0?'neg':ist>0?'pos':''}">${eur(ist)}</strong></div><div><span>Abw.</span><strong class="mono ${diff>=0?'pos':'neg'}">${eur(diff)}</strong></div></div>
@@ -1141,6 +1271,7 @@ async function syncDrive(){
 }
 
 // ─── INIT ───────────────────────────────────────────────
+runFixkostenAutomatik();
 fillMonthSelects();
 renderDashboard();
 initGoogleLibraries();
