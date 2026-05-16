@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>👨‍👩‍👧‍👦 Familien-Haushaltsbuch 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{--bg:#f0ede8;--surface:#faf9f6;--card:#ffffff;--border:#e2ddd6;--text:#1a1714;--muted:#7a736b;--accent:#2d6a4f;--accent2:#e76f51;--accent3:#457b9d;--green:#2d6a4f;--red:#c1121f;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,0.06)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--text);color:#fff;padding:24px 0;position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:100}
+.logo{padding:0 20px 24px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:16px}
+.logo-title{font-size:13px;font-weight:600;line-height:1.4}
+.logo-sub{font-size:11px;opacity:.5;margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;font-size:13px;font-weight:500;opacity:.6;border-left:3px solid transparent;transition:all .15s}
+.nav-item:hover{opacity:.9;background:rgba(255,255,255,.05)}
+.nav-item.active{opacity:1;border-left-color:var(--accent2);background:rgba(255,255,255,.08)}
+.nav-icon{font-size:15px}
+.main{margin-left:220px;flex:1;padding:32px;max-width:calc(100vw - 220px)}
+.page{display:none}.page.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.card-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
+.stat-val{font-size:26px;font-weight:600;font-family:'DM Mono',monospace}
+.stat-val.green{color:var(--green)}.stat-val.red{color:var(--red)}.stat-val.blue{color:var(--accent3)}
+.page-header{margin-bottom:28px}
+.page-title{font-size:24px;font-weight:600}
+.page-sub{font-size:13px;color:var(--muted);margin-top:3px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:9px 12px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+.mono{font-family:'DM Mono',monospace;font-size:12px}
+.pos{color:var(--green)}.neg{color:var(--red)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.form-group input,.form-group select{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);outline:none;transition:border .15s}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
+.btn{padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#235c43}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--bg)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-small{padding:6px 10px;font-size:12px}
+.action-group{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+.edit-btn{background:none;border:1px solid var(--border);cursor:pointer;color:var(--accent3);font-size:12px;padding:4px 8px;border-radius:6px}
+.edit-btn:hover{background:#edf6fb;border-color:#c8ddeb}
+.edit-panel{border-color:#c8ddeb;background:#fbfdff}
+.inline-input{width:100%;min-width:120px;padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:12px;background:var(--surface);color:var(--text)}
+.inline-input.mono{font-family:'DM Mono',monospace}
+.hint{font-size:12px;color:var(--muted);margin-top:10px}
+.repeat-hint{font-size:11px;color:var(--muted);line-height:1.35;margin-top:-2px}
+.mobile-list{display:none}
+.booking-card{border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--surface);margin-bottom:10px}
+.booking-card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px}
+.booking-card-title{font-weight:600;font-size:14px;line-height:1.25}
+.booking-card-date{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap}
+.booking-card-meta{display:grid;gap:5px;font-size:12px;color:var(--muted);margin-bottom:10px}
+.booking-card-meta strong{color:var(--text);font-weight:500}
+.category-card{border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--surface);margin-bottom:10px}
+.category-card .form-grid{margin-bottom:10px}
+.budget-card{border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--surface);margin-bottom:10px}
+.budget-card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
+.budget-card-title{font-weight:600;font-size:14px;line-height:1.25}
+.budget-card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.budget-card-grid div{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px}
+.budget-card-grid span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.month-card{border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--surface);margin-bottom:10px}
+.month-card-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px;align-items:flex-start}
+.month-card-title{font-weight:600;font-size:15px}
+.month-card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.month-card-grid div{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px}
+.month-card-grid span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.sync-strip{position:fixed;left:220px;right:0;bottom:0;background:rgba(250,249,246,.96);border-top:1px solid var(--border);padding:7px 16px;display:flex;gap:14px;align-items:center;justify-content:flex-end;font-size:11px;color:var(--muted);z-index:90;backdrop-filter:blur(8px)}
+.sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;background:var(--muted)}
+.sync-dot.ok{background:var(--green)}
+.sync-dot.off{background:var(--red)}
+.sync-dot.warn{background:#e9c46a}
+.hidden-file{display:none}
+.filter-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.filter-bar input,.filter-bar select{padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--card);color:var(--text)}
+.month-select{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.month-select select{padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--card)}
+.chart-container{position:relative;width:100%;height:260px}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.total-row td{font-weight:600;background:var(--bg) !important}
+.del-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:14px;transition:color .15s;padding:2px 6px;border-radius:4px}
+.del-btn:hover{color:var(--red);background:#fff0f0}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-green{background:#d8f3dc;color:#1b4332}
+.badge-red{background:#ffe0e0;color:#7b1d1d}
+.badge-yellow{background:#fff3cd;color:#7b5800}
+.badge-blue{background:#dbeafe;color:#1e3a5f}
+.prog-bar{background:var(--border);border-radius:20px;height:6px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;border-radius:20px;transition:width .25s ease,background .25s ease}
+.quick-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 16px}
+.quick-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.quick-btn:hover{border-color:var(--accent);background:#eef7f1;transform:translateY(-1px)}
+.quick-btn .quick-icon{font-size:18px;line-height:1}
+.budget-monitor-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.monitor-item{border:1px solid var(--border);border-radius:10px;background:var(--surface);padding:14px}
+.monitor-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
+.monitor-title{font-size:14px;font-weight:700}
+.monitor-left{font-family:'DM Mono',monospace;font-size:13px;font-weight:600}
+.monitor-meta{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:11px;color:var(--muted)}
+.ziel-bar{background:var(--border);border-radius:20px;height:18px;overflow:hidden;margin-top:10px}
+.ziel-fill{height:100%;background:var(--accent);border-radius:20px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;transition:width .5s}
+.ziel-pct{font-size:10px;color:#fff;font-weight:700}
+.sz-input{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.sz-input label{font-size:13px;min-width:250px;color:var(--muted)}
+.sz-input input{width:110px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-family:'DM Mono',monospace;font-size:13px;background:var(--surface)}
+
+@media (max-width:1100px){
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  body{background:var(--surface)}
+  .app{display:block;min-height:100vh}
+  .sidebar{width:100%;height:68px;top:auto;right:0;bottom:0;left:0;padding:0 8px;display:flex;flex-direction:row;align-items:stretch;overflow-x:auto;overflow-y:hidden;gap:2px;box-shadow:0 -4px 18px rgba(0,0,0,.14)}
+  .sidebar::-webkit-scrollbar{display:none}
+  .logo{display:none}
+  .nav-item{min-width:78px;flex:0 0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:7px 8px;border-left:none;border-top:3px solid transparent;font-size:10px;line-height:1.15;text-align:center;white-space:normal}
+  .nav-item.active{border-left-color:transparent;border-top-color:var(--accent2)}
+  .nav-icon{font-size:18px;line-height:1}
+  .main{margin-left:0;max-width:none;padding:18px 14px 118px}
+  .sync-strip{left:0;bottom:68px;justify-content:flex-start;overflow-x:auto;white-space:nowrap;padding:7px 10px;font-size:10px}
+  .page-header{margin-bottom:18px}
+  .page-title{font-size:22px;line-height:1.2}
+  .page-sub{font-size:12px;line-height:1.35}
+  .card{padding:16px;border-radius:10px;box-shadow:none}
+  .grid-4,.grid-3,.grid-2,.form-grid{grid-template-columns:1fr;gap:12px;margin-bottom:16px}
+  .stat-val{font-size:22px}
+  .form-group{min-width:0}
+  .form-group input,.form-group select,.filter-bar input,.filter-bar select,.month-select select,.inline-input{width:100%;max-width:100%;min-width:0;min-height:46px;font-size:16px;padding:11px 12px}
+  .btn{min-height:46px;padding:12px 16px;font-size:15px}
+  .quick-actions{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
+  .quick-btn{min-height:52px;font-size:13px;padding:10px 8px}
+  .quick-btn .quick-icon{font-size:20px}
+  .budget-monitor-list{grid-template-columns:1fr;gap:10px}
+  .monitor-item{padding:13px}
+  .main{font-size:15px}
+  .btn-small{min-height:36px;padding:8px 10px;font-size:12px}
+  .filter-bar{display:grid;grid-template-columns:1fr;gap:8px}
+  .filter-bar input,.filter-bar select{width:100%;min-width:0!important}
+  .month-select{align-items:flex-start;flex-direction:column;gap:8px;margin-bottom:16px}
+  .month-select select{width:100%}
+  .section-header{align-items:flex-start;flex-direction:column;gap:8px}
+  .chart-container{height:230px;overflow:hidden}
+  table{display:block;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;font-size:12px}
+  #b-table,#kat-table,#budget-table,#jahres-table{display:none}
+  .mobile-list{display:block}
+  th,td{padding:8px 10px}
+  .action-group{justify-content:flex-start;flex-wrap:wrap}
+  .edit-btn,.del-btn{min-height:34px}
+  .sz-input{display:grid;grid-template-columns:1fr;gap:6px}
+  .sz-input label{min-width:0;font-size:12px}
+  .sz-input input{width:100%;min-height:42px;font-size:16px}
+}
+@media (max-width:420px){
+  .main{padding:14px 10px 90px}
+  .card{padding:12px}
+  .nav-item{min-width:70px;font-size:9px}
+  .stat-val{font-size:20px}
+  .page-title{font-size:20px}
+}
+
+</style>
+<script async defer src="https://accounts.google.com/gsi/client"></script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1a1714">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Haushaltsbuch">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<div class="app">
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-title">👨‍👩‍👧‍👦 Familien-Haushaltsbuch</div>
+    <div class="logo-sub">2026</div>
+  </div>
+  <div class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon">📊</span> Dashboard</div>
+  <div class="nav-item" onclick="showPage('buchungen')"><span class="nav-icon">📝</span> Buchungen</div>
+  <div class="nav-item" onclick="showPage('auswertung')"><span class="nav-icon">📈</span> Auswertung</div>
+  <div class="nav-item" onclick="showPage('budget')"><span class="nav-icon">🎯</span> Budget-Kontrolle</div>
+  <div class="nav-item" onclick="showPage('jahres')"><span class="nav-icon">📅</span> Jahresübersicht</div>
+  <div class="nav-item" onclick="showPage('szenario')"><span class="nav-icon">🔮</span> Szenario</div>
+  <div class="nav-item" onclick="showPage('sparziel')"><span class="nav-icon">💰</span> Sparziel</div>
+  <div class="nav-item" onclick="showPage('kategorien')"><span class="nav-icon">📋</span> Kategorien</div>
+  <div class="nav-item" onclick="showPage('sync')"><span class="nav-icon">☁️</span> Google Drive</div>
+</nav>
+<main class="main">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="page-header"><div class="page-title">Dashboard</div><div class="page-sub">Finanzübersicht auf einen Blick</div></div>
+  <div class="month-select">
+    <label style="font-size:13px;font-weight:500">Monat wählen:</label>
+    <select id="dash-month" onchange="renderDashboard()"></select>
+  </div>
+  <div class="grid-4">
+    <div class="card"><div class="stat-label">💰 Einnahmen</div><div class="stat-val green" id="d-ein">–</div></div>
+    <div class="card"><div class="stat-label">💸 Ausgaben</div><div class="stat-val red" id="d-aus">–</div></div>
+    <div class="card"><div class="stat-label">💾 Sparbetrag</div><div class="stat-val blue" id="d-spar">–</div></div>
+    <div class="card"><div class="stat-label">📈 Sparquote</div><div class="stat-val" id="d-quote">–</div></div>
+  </div>
+  <div class="card budget-monitor-card" style="margin-bottom:24px">
+    <div class="section-header"><div class="card-title" style="margin:0">Budget-Monitor</div><span style="font-size:12px;color:var(--muted)">Lebensmittel, Auto und Freizeit</span></div>
+    <div id="budget-monitor-list" class="budget-monitor-list"></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-title">Ausgaben nach Kategorie</div><div class="chart-container"><canvas id="c-dash-pie"></canvas></div></div>
+    <div class="card"><div class="card-title">Einnahmen vs. Ausgaben (alle Monate)</div><div class="chart-container"><canvas id="c-dash-bar"></canvas></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Kategorie-Budget-Vergleich</div>
+    <table><thead><tr><th>Kategorie</th><th>Ist</th><th>Budget</th><th>Abw.</th><th>Auslastung</th><th>Status</th></tr></thead>
+    <tbody id="dash-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- BUCHUNGEN -->
+<div id="page-buchungen" class="page">
+  <div class="page-header"><div class="page-title">Buchungen</div><div class="page-sub">Alle Ein- und Ausgaben erfassen und verwalten</div></div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-title">Neue Buchung</div>
+    <div class="quick-actions" aria-label="Schnellbuchungen">
+      <button class="quick-btn" type="button" onclick="prefillQuickBooking('baecker')" title="Bäcker"><span class="quick-icon">🥐</span><span>Bäcker</span></button>
+      <button class="quick-btn" type="button" onclick="prefillQuickBooking('supermarkt')" title="Supermarkt"><span class="quick-icon">🛒</span><span>Supermarkt</span></button>
+      <button class="quick-btn" type="button" onclick="prefillQuickBooking('tanken')" title="Tanken"><span class="quick-icon">⛽</span><span>Tanken</span></button>
+      <button class="quick-btn" type="button" onclick="prefillQuickBooking('essen')" title="Essen"><span class="quick-icon">🍽️</span><span>Essen</span></button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Datum</label><input type="date" id="b-datum"></div>
+      <div class="form-group"><label>Beschreibung</label><input type="text" id="b-desc" placeholder="z.B. Rewe Wocheneinkauf"></div>
+      <div class="form-group"><label>Kategorie</label><select id="b-kat"></select></div>
+      <div class="form-group"><label>Betrag (€) – negativ = Ausgabe</label><input type="number" id="b-betrag" placeholder="-142 oder 3200" step="0.01"></div>
+      <div class="form-group"><label>Zahlungsart</label>
+        <select id="b-zahlung"><option>Girokonto</option><option>Kreditkarte 1</option><option>Kreditkarte 2</option><option>Bar</option></select>
+      </div>
+      <div class="form-group"><label>Notiz</label><input type="text" id="b-notiz" placeholder="Optional..."></div>
+      <div class="form-group"><label>Fixkosten-Tag</label><input type="number" id="b-fix-day" min="1" max="31" placeholder="z.B. 15"><div class="repeat-hint">Nur für Kategorien aus der Gruppe Fixkosten. Leer = Tag aus Datum.</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="addBuchung()">+ Buchung hinzufügen</button>
+  </div>
+  <div class="card edit-panel" id="edit-buchung-card" style="display:none;margin-bottom:24px">
+    <div class="section-header"><div class="card-title" style="margin:0">Buchung bearbeiten</div><button class="btn btn-secondary btn-small" onclick="cancelEditBuchung()">Abbrechen</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Datum</label><input type="date" id="e-datum"></div>
+      <div class="form-group"><label>Beschreibung</label><input type="text" id="e-desc"></div>
+      <div class="form-group"><label>Kategorie</label><select id="e-kat"></select></div>
+      <div class="form-group"><label>Betrag (€) - negativ = Ausgabe</label><input type="number" id="e-betrag" step="0.01"></div>
+      <div class="form-group"><label>Zahlungsart</label>
+        <select id="e-zahlung"><option>Girokonto</option><option>Kreditkarte 1</option><option>Kreditkarte 2</option><option>Bar</option></select>
+      </div>
+      <div class="form-group"><label>Notiz</label><input type="text" id="e-notiz"></div>
+      <div class="form-group"><label>Fixkosten-Tag</label><input type="number" id="e-fix-day" min="1" max="31" placeholder="z.B. 15"><div class="repeat-hint">Nur für Kategorien aus der Gruppe Fixkosten. Leer = Tag aus Datum.</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="saveBuchungEdit()">Änderungen speichern</button>
+  </div>
+  <div class="card">
+    <div class="section-header">
+      <div class="card-title" style="margin:0">Buchungsübersicht</div>
+      <span id="b-count" style="font-size:13px;color:var(--muted)"></span>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="f-text" placeholder="🔍 Suchen..." oninput="renderBuchungen()" style="flex:1;min-width:140px">
+      <select id="f-monat" onchange="renderBuchungen()"></select>
+      <select id="f-kat" onchange="renderBuchungen()"><option value="">Alle Kategorien</option></select>
+      <select id="f-zahlung" onchange="renderBuchungen()">
+        <option value="">Alle Zahlungsarten</option><option>Girokonto</option><option>Kreditkarte 1</option><option>Kreditkarte 2</option><option>Bar</option>
+      </select>
+    </div>
+    <table id="b-table"><thead><tr><th>Datum</th><th>Beschreibung</th><th>Kategorie</th><th>Betrag</th><th>Zahlung</th><th>Notiz</th><th>Aktion</th></tr></thead>
+    <tbody id="b-tbody"></tbody></table>
+    <div id="b-mobile-list" class="mobile-list"></div>
+    <div id="b-summe" style="padding:12px;text-align:right;font-size:13px;color:var(--muted);border-top:1px solid var(--border)"></div>
+  </div>
+</div>
+
+<!-- AUSWERTUNG -->
+<div id="page-auswertung" class="page">
+  <div class="page-header"><div class="page-title">Monatsauswertung</div><div class="page-sub">Kategorien und Monatssalden im Vergleich</div></div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-title">Jahresverlauf – Einnahmen, Ausgaben & Saldo</div>
+    <div class="chart-container" style="height:280px"><canvas id="c-auswert"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Detailauswertung nach Kategorie und Monat</div>
+    <div style="overflow-x:auto"><table id="auswert-table"></table></div>
+  </div>
+</div>
+
+<!-- BUDGET -->
+<div id="page-budget" class="page">
+  <div class="page-header"><div class="page-title">Budget-Kontrolle</div><div class="page-sub">Soll-Ist-Vergleich deiner Kategorien</div></div>
+  <div class="month-select">
+    <label style="font-size:13px;font-weight:500">Monat:</label>
+    <select id="budget-month" onchange="renderBudget()"></select>
+  </div>
+  <div class="grid-3" id="budget-kpi"></div>
+  <div class="card">
+    <div class="card-title">Alle Kategorien</div>
+    <table id="budget-table"><thead><tr><th>Kategorie</th><th>Gruppe</th><th>Budget</th><th>Ist</th><th>Abweichung</th><th>Fortschritt</th><th>Status</th></tr></thead>
+    <tbody id="budget-tbody"></tbody>
+    <tfoot><tr class="total-row"><td colspan="2"><strong>GESAMT</strong></td><td class="mono" id="bt-budget"></td><td class="mono" id="bt-ist"></td><td class="mono" id="bt-diff"></td><td></td><td></td></tr></tfoot>
+    </table>
+    <div id="budget-mobile-list" class="mobile-list"></div>
+  </div>
+</div>
+
+<!-- JAHRESÜBERSICHT -->
+<div id="page-jahres" class="page">
+  <div class="page-header"><div class="page-title">Jahresübersicht 2026</div><div class="page-sub">Monat für Monat – Einnahmen, Ausgaben, Sparquote</div></div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-title">Jahresverlauf mit kumuliertem Sparbetrag</div>
+    <div class="chart-container" style="height:300px"><canvas id="c-jahres"></canvas></div>
+  </div>
+  <div class="card">
+    <table id="jahres-table">
+      <thead><tr><th>Monat</th><th>Einnahmen</th><th>Ausgaben</th><th>Sparbetrag</th><th>Sparquote</th><th>Kumuliert</th></tr></thead>
+      <tbody id="jahres-tbody"></tbody>
+      <tfoot><tr class="total-row"><td><strong>Jahres-Gesamt</strong></td><td class="mono pos" id="jt-ein"></td><td class="mono neg" id="jt-aus"></td><td class="mono pos" id="jt-spar"></td><td class="mono" id="jt-quote"></td><td class="mono" id="jt-kum"></td></tr></tfoot>
+    </table>
+    <div id="jahres-mobile-list" class="mobile-list"></div>
+  </div>
+</div>
+
+<!-- SZENARIO -->
+<div id="page-szenario" class="page">
+  <div class="page-header"><div class="page-title">Was-wäre-wenn Szenario</div><div class="page-sub">Simuliere finanzielle Änderungen</div></div>
+<div class="grid-2">
+    <div class="card">
+      <div class="card-title">Ist-Situation</div>
+      <table style="margin-bottom:24px">
+        <tr><td style="color:var(--muted)">Einnahmen/Monat</td><td class="mono pos" id="sz-ein">–</td></tr>
+        <tr><td style="color:var(--muted)">Ausgaben/Monat</td><td class="mono neg" id="sz-aus">–</td></tr>
+        <tr><td style="color:var(--muted)">Sparbetrag</td><td class="mono" id="sz-spar">–</td></tr>
+        <tr><td style="color:var(--muted)">Sparquote</td><td class="mono" id="sz-quote">–</td></tr>
+      </table>
+      <div class="card-title">Szenarien (blaue Felder anpassen)</div>
+      <div class="sz-input"><label>Gehaltserhöhung Erw. 1 (€/Mo)</label><input type="number" id="sz1" value="200" oninput="renderSzenario()"></div>
+      <div class="sz-input"><label>Gehaltserhöhung Erw. 2 (€/Mo)</label><input type="number" id="sz2" value="0" oninput="renderSzenario()"></div>
+      <div class="sz-input"><label>Einsparung (positiv = weniger Ausgaben)</label><input type="number" id="sz3" value="300" oninput="renderSzenario()"></div>
+      <div class="sz-input"><label>Mehr Ausgaben (negativ = Mehrkosten)</label><input type="number" id="sz4" value="-200" oninput="renderSzenario()"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Ergebnis</div>
+      <div class="grid-2" style="margin-bottom:20px">
+        <div><div class="stat-label">Neuer Sparbetrag</div><div class="stat-val green" id="szr-spar">–</div></div>
+        <div><div class="stat-label">Neue Sparquote</div><div class="stat-val blue" id="szr-quote">–</div></div>
+        <div><div class="stat-label">Verbesserung</div><div class="stat-val" id="szr-diff">–</div></div>
+        <div><div class="stat-label">Neue Einnahmen</div><div class="stat-val" id="szr-ein">–</div></div>
+      </div>
+      <div class="chart-container"><canvas id="c-szenario"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- SPARZIEL -->
+<div id="page-sparziel" class="page">
+  <div class="page-header"><div class="page-title">Sparziel-Rechner</div><div class="page-sub">Wann erreichst du dein Ziel?</div></div>
+<div class="grid-2">
+    <div class="card">
+      <div class="card-title">Ziel definieren</div>
+      <div class="form-group" style="margin-bottom:16px"><label>Sparziel (€)</label><input type="number" id="ziel-bet" value="15000" oninput="renderSparziel()"></div>
+      <div class="form-group" style="margin-bottom:24px"><label>Beschreibung</label><input type="text" id="ziel-desc" value="z.B. Urlaub / Notfallfonds"></div>
+      <button class="btn btn-primary" onclick="renderSparziel()">Neu berechnen</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Fortschritt</div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+        <span>Gespart: <strong id="zp-ist">–</strong></span>
+        <span>Ziel: <strong id="zp-ziel">–</strong></span>
+      </div>
+      <div class="ziel-bar"><div class="ziel-fill" id="zp-fill" style="width:0%"><span class="ziel-pct" id="zp-pct">0%</span></div></div>
+      <table style="margin-top:20px">
+        <tr><td style="color:var(--muted)">Monatliche Sparrate (Ø)</td><td class="mono pos" id="zp-rate">–</td></tr>
+        <tr><td style="color:var(--muted)">Noch benötigt (€)</td><td class="mono" id="zp-noch">–</td></tr>
+        <tr><td style="color:var(--muted)">Monate bis Ziel</td><td class="mono" id="zp-monate">–</td></tr>
+        <tr><td style="color:var(--muted)">Voraussichtlich erreicht</td><td class="mono" id="zp-datum">–</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- KATEGORIEN -->
+<div id="page-kategorien" class="page">
+  <div class="page-header"><div class="page-title">Kategorien & Budgets</div><div class="page-sub">Kategorien anlegen, umbenennen und Monatsbudgets ändern</div></div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-title">Neue Kategorie</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Name</label><input type="text" id="kat-new-name" placeholder="z.B. Urlaub"></div>
+      <div class="form-group"><label>Gruppe</label><select id="kat-new-gruppe"><option>Einnahmen</option><option>Fixkosten</option><option>Variable Kosten</option><option>Sonstiges</option></select></div>
+      <div class="form-group"><label>Monatsbudget (€)</label><input type="number" id="kat-new-budget" placeholder="-100 oder 500" step="0.01"></div>
+    </div>
+    <button class="btn btn-primary" onclick="addKategorie()">+ Kategorie hinzufügen</button>
+    <div class="hint">Tipp: Ausgaben als negativen Betrag eintragen, Einnahmen positiv.</div>
+  </div>
+  <div class="card">
+    <table id="kat-table">
+      <thead><tr><th>Kategorie</th><th>Gruppe</th><th>Monatsbudget (€)</th><th>Aktion</th></tr></thead>
+      <tbody id="kat-tbody"></tbody>
+    </table>
+    <div id="kat-mobile-list" class="mobile-list"></div>
+  </div>
+</div>
+
+
+<!-- GOOGLE DRIVE SYNC -->
+<div id="page-sync" class="page">
+  <div class="page-header"><div class="page-title">Google Drive Sync</div><div class="page-sub">Gemeinsamer Datenstand für Desktop und Handy</div></div>
+<div class="grid-2">
+    <div class="card">
+      <div class="card-title">Verbindung</div>
+      <table style="margin-bottom:18px">
+        <tr><td style="color:var(--muted)">Status</td><td class="mono" id="sync-status">Nicht verbunden</td></tr>
+        <tr><td style="color:var(--muted)">Drive-Datei</td><td class="mono" id="sync-file">-</td></tr>
+        <tr><td style="color:var(--muted)">Letzter Sync</td><td class="mono" id="sync-last">-</td></tr>
+      </table>
+      <div class="action-group" style="justify-content:flex-start;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="connectDrive()">Mit Google verbinden</button>
+        <button class="btn btn-secondary" onclick="syncDrive()">Jetzt synchronisieren</button>
+        <button class="btn btn-secondary" onclick="exportBackup()">Sicherung exportieren</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('backup-import').click()">Sicherung importieren</button>
+        <button class="btn btn-secondary" onclick="signOutDrive()">Trennen</button>
+        <input class="hidden-file" id="backup-import" type="file" accept="application/json,.json" onchange="importBackup(this)">
+      </div>
+      <div class="hint">Die gemeinsame Datei heißt <strong>haushaltsbuch-daten.json</strong> und liegt im Google-Drive-Ordner <strong>Familien-Haushaltsbuch</strong>.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Hinweis für gemeinsame Nutzung</div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Nachdem die Datei einmal erstellt wurde, teile den Ordner in Google Drive mit deiner Frau. Danach kann sie sich in ihrer Version der App ebenfalls verbinden und denselben Datenstand verwenden.</p>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6">Beim Synchronisieren werden neue und geänderte Buchungen zusammengeführt. Gelöschte Buchungen werden ebenfalls gemerkt, damit sie nicht beim nächsten Sync wieder auftauchen.</p>
+    </div>
+  </div>
+</div>
+</main>
+<div class="sync-strip" id="sync-strip"><span><span class="sync-dot" id="online-dot"></span><span id="online-label">Online</span></span><span id="local-save-label">Lokal: -</span><span><span class="sync-dot" id="drive-dot"></span><span id="drive-sync-label">Drive: -</span></span></div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────
+const KATEGORIEN_DEFAULT = [
+  {name:'Einnahmen - Gehalt Erwachsener 1',gruppe:'Einnahmen',budget:3200},
+  {name:'Einnahmen - Gehalt Erwachsener 2',gruppe:'Einnahmen',budget:2400},
+  {name:'Einnahmen - Kindergeld',gruppe:'Einnahmen',budget:500},
+  {name:'Einnahmen - Sonstiges',gruppe:'Einnahmen',budget:100},
+  {name:'Miete/Kreditrate',gruppe:'Fixkosten',budget:-1200},
+  {name:'Strom, Wasser, Heizung, Müll',gruppe:'Fixkosten',budget:-250},
+  {name:'KFZ Versicherung, Steuer, Leasing',gruppe:'Fixkosten',budget:-350},
+  {name:'ÖPNV',gruppe:'Fixkosten',budget:-80},
+  {name:'Versicherungen (Haftpflicht, Hausrat, BU, AV)',gruppe:'Fixkosten',budget:-200},
+  {name:'Internet, Handy, Streaming',gruppe:'Fixkosten',budget:-100},
+  {name:'Kindergarten (3J), Hort (11J), Taschengeld',gruppe:'Fixkosten',budget:-250},
+  {name:'Lebensmittel & Haushalt',gruppe:'Variable Kosten',budget:-600},
+  {name:'Kind 11 (Schule/Hobby)',gruppe:'Variable Kosten',budget:-150},
+  {name:'Kind 3 (Kleidung/Spielzeug)',gruppe:'Variable Kosten',budget:-100},
+  {name:'Tanken',gruppe:'Variable Kosten',budget:-200},
+  {name:'Freizeit/Restaurant',gruppe:'Variable Kosten',budget:-300},
+  {name:'Gesundheit',gruppe:'Variable Kosten',budget:-80},
+  {name:'Katze (Futter/Tierarzt)',gruppe:'Sonstiges',budget:-60},
+  {name:'Kreditrate',gruppe:'Sonstiges',budget:-400},
+  {name:'Gebühren/Zinsen',gruppe:'Sonstiges',budget:-30},
+];
+
+let KATEGORIEN = JSON.parse(localStorage.getItem('kategorien') || 'null') || KATEGORIEN_DEFAULT.map(k=>({...k}));
+const BUDGET_MONITOR_GROUPS = [
+  {label:'Lebensmittel', keywords:['Lebensmittel']},
+  {label:'Auto', keywords:['KFZ','Tanken','Auto']},
+  {label:'Freizeit', keywords:['Freizeit','Restaurant']}
+];
+const QUICK_BOOKINGS = {
+  baecker:{desc:'Bäcker',betrag:-8.50,keywords:['Lebensmittel'],zahlung:'Bar'},
+  supermarkt:{desc:'Supermarkt',betrag:-65.00,keywords:['Lebensmittel'],zahlung:'Kreditkarte 1'},
+  tanken:{desc:'Tanken',betrag:-75.00,keywords:['Tanken','KFZ'],zahlung:'Kreditkarte 1'},
+  essen:{desc:'Essen / Restaurant',betrag:-45.00,keywords:['Freizeit','Restaurant'],zahlung:'Kreditkarte 1'}
+};
+let deletedBuchungIds = JSON.parse(localStorage.getItem('deletedBuchungIds') || '[]');
+
+const BUCHUNGEN_RAW = [
+  {datum:'2026-01-01',desc:'Januargehalt Erwachsener 1',kat:'Einnahmen - Gehalt Erwachsener 1',betrag:3200,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-01-01',desc:'Januargehalt Erwachsener 2',kat:'Einnahmen - Gehalt Erwachsener 2',betrag:2400,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-01-01',desc:'Kindergeld Januar',kat:'Einnahmen - Kindergeld',betrag:500,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-01-02',desc:'Januarmiete',kat:'Miete/Kreditrate',betrag:-1200,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-01-04',desc:'Rewe Wocheneinkauf',kat:'Lebensmittel & Haushalt',betrag:-142,zahlung:'Kreditkarte 1',notiz:''},
+  {datum:'2026-01-04',desc:'Strom/Gas Januar',kat:'Strom, Wasser, Heizung, Müll',betrag:-248,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-01-07',desc:'Tanken VW',kat:'Tanken',betrag:-78,zahlung:'Kreditkarte 1',notiz:''},
+  {datum:'2026-01-07',desc:'Kindergartenbeitrag',kat:'Kindergarten (3J), Hort (11J), Taschengeld',betrag:-250,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-01-09',desc:'Fressnapf Katzenfutter',kat:'Katze (Futter/Tierarzt)',betrag:-28,zahlung:'Bar',notiz:''},
+  {datum:'2026-01-11',desc:'Pizzeria Sonntag',kat:'Freizeit/Restaurant',betrag:-350,zahlung:'Kreditkarte 2',notiz:''},
+  {datum:'2026-01-14',desc:'Kreditrate Januar',kat:'Kreditrate',betrag:-400,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-01-17',desc:'Fußball-Vereinsbeitrag Kind 11',kat:'Kind 11 (Schule/Hobby)',betrag:-40,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-01-19',desc:'Apotheke',kat:'Gesundheit',betrag:-22,zahlung:'Bar',notiz:''},
+  {datum:'2026-01-21',desc:'Internet/Handy Januar',kat:'Internet, Handy, Streaming',betrag:-99,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-01-24',desc:'Haftpflicht + Hausrat',kat:'Versicherungen (Haftpflicht, Hausrat, BU, AV)',betrag:-195,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-01-27',desc:'KFZ Versicherung Januar',kat:'KFZ Versicherung, Steuer, Leasing',betrag:-345,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-02-01',desc:'Februargehalt Erwachsener 1',kat:'Einnahmen - Gehalt Erwachsener 1',betrag:3200,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-02-01',desc:'Februargehalt Erwachsener 2',kat:'Einnahmen - Gehalt Erwachsener 2',betrag:2400,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-02-01',desc:'Kindergeld Februar',kat:'Einnahmen - Kindergeld',betrag:500,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-02-02',desc:'Februarmiete',kat:'Miete/Kreditrate',betrag:-1200,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-02-06',desc:'Aldi Wocheneinkauf',kat:'Lebensmittel & Haushalt',betrag:-135,zahlung:'Bar',notiz:''},
+  {datum:'2026-02-08',desc:'Tanken Skoda',kat:'Tanken',betrag:-82,zahlung:'Kreditkarte 2',notiz:''},
+  {datum:'2026-02-10',desc:'Tierarzt Katze',kat:'Katze (Futter/Tierarzt)',betrag:-85,zahlung:'Kreditkarte 1',notiz:''},
+  {datum:'2026-02-14',desc:'Valentinstag Restaurant',kat:'Freizeit/Restaurant',betrag:-95,zahlung:'Kreditkarte 2',notiz:''},
+  {datum:'2026-02-15',desc:'Kreditrate Februar',kat:'Kreditrate',betrag:-400,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-02-18',desc:'Schulmaterial Kind 11',kat:'Kind 11 (Schule/Hobby)',betrag:-55,zahlung:'Bar',notiz:''},
+  {datum:'2026-02-22',desc:'Kleidung Kind 3',kat:'Kind 3 (Kleidung/Spielzeug)',betrag:-68,zahlung:'Kreditkarte 1',notiz:''},
+  {datum:'2026-03-01',desc:'Märzgehalt Erwachsener 1',kat:'Einnahmen - Gehalt Erwachsener 1',betrag:3200,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-03-01',desc:'Märzgehalt Erwachsener 2',kat:'Einnahmen - Gehalt Erwachsener 2',betrag:2400,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-03-01',desc:'Kindergeld März',kat:'Einnahmen - Kindergeld',betrag:500,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-03-02',desc:'Märzmiete',kat:'Miete/Kreditrate',betrag:-1200,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-03-06',desc:'Rewe Großeinkauf',kat:'Lebensmittel & Haushalt',betrag:-198,zahlung:'Kreditkarte 1',notiz:''},
+  {datum:'2026-03-13',desc:'Kreditrate März',kat:'Kreditrate',betrag:-400,zahlung:'Girokonto',notiz:''},
+  {datum:'2026-03-18',desc:'Osterurlaub Anzahlung',kat:'Freizeit/Restaurant',betrag:-350,zahlung:'Kreditkarte 2',notiz:''},
+  {datum:'2026-03-20',desc:'Zahnarzt Kind 11',kat:'Gesundheit',betrag:-45,zahlung:'Girokonto',notiz:''},
+];
+
+let buchungen = JSON.parse(localStorage.getItem('buchungen') || 'null') || BUCHUNGEN_RAW.map((b,i)=>({...b,id:i}));
+let nextId = buchungen.length ? Math.max(...buchungen.map(b=>Number(b.id)||0)) + 1 : 0;
+let editingBuchungId = null;
+
+function save(){
+  localStorage.setItem('buchungen',JSON.stringify(buchungen));
+  localStorage.setItem('kategorien',JSON.stringify(KATEGORIEN));
+  localStorage.setItem('deletedBuchungIds',JSON.stringify(deletedBuchungIds));
+  localStorage.setItem('localLastSave',new Date().toISOString());
+  localStorage.setItem('hasUnsyncedChanges','true');
+  updateStatusStrip();
+}
+function esc(v){return String(v ?? '').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function renderCurrentPage(){
+  const active=document.querySelector('.page.active')?.id?.replace('page-','') || 'dashboard';
+  const renders={dashboard:renderDashboard,buchungen:renderBuchungen,auswertung:renderAuswertung,budget:renderBudget,jahres:renderJahres,szenario:renderSzenario,sparziel:renderSparziel,kategorien:renderKategorien,sync:renderSync};
+  if(renders[active]) renders[active]();
+}
+function refreshViews(){save();fillMonthSelects();renderCurrentPage();}
+function updateStatusStrip(){
+  const online=navigator.onLine;
+  const dot=document.getElementById('online-dot');
+  const onlineLabel=document.getElementById('online-label');
+  if(dot){dot.className='sync-dot '+(online?'ok':'off');}
+  if(onlineLabel) onlineLabel.textContent=online?'Online':'Offline';
+  const local=localStorage.getItem('localLastSave')||'';
+  const localLabel=document.getElementById('local-save-label');
+  if(localLabel) localLabel.textContent='Lokal: '+(local?new Date(local).toLocaleString('de-DE'):'-');
+  const driveLabel=document.getElementById('drive-sync-label');
+  const dirty=localStorage.getItem('hasUnsyncedChanges')==='true';
+  if(driveLabel) driveLabel.textContent=dirty?'Drive: Änderungen offen':'Drive: '+(driveLastSync?new Date(driveLastSync).toLocaleString('de-DE'):'-');
+  const driveDot=document.getElementById('drive-dot');
+  if(driveDot) driveDot.className='sync-dot '+(dirty?'warn':(driveLastSync?'ok':''));
+}
+
+// ─── HELPERS ────────────────────────────────────────────
+const eur = v => (v<0?'−':'') + Math.abs(v).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
+const pct = v => (v*100).toFixed(1) + ' %';
+const monatName = m => {const [y,mo]=m.split('-');return ['','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+mo]+' '+y;};
+
+function getMonths(){
+  const ms = new Set(buchungen.map(b=>b.datum.slice(0,7)));
+  return [...ms].sort();
+}
+
+function getSumByMonth(){
+  const res={};
+  buchungen.forEach(b=>{
+    const m=b.datum.slice(0,7);
+    if(!res[m]) res[m]={ein:0,aus:0};
+    if(b.betrag>0) res[m].ein+=b.betrag;
+    else res[m].aus+=b.betrag;
+  });
+  return res;
+}
+
+function getIstForMonatKat(monat, kat){
+  return buchungen.filter(b=>b.datum.slice(0,7)===monat && b.kat===kat).reduce((s,b)=>s+b.betrag,0);
+}
+
+
+function budgetUsageColor(pctVal){
+  if(pctVal>=100) return '#c1121f';
+  if(pctVal>=80) return '#e9c46a';
+  return '#2d6a4f';
+}
+function findCategoryByKeywords(keywords){
+  const keys=(keywords||[]).map(k=>String(k).toLowerCase());
+  return KATEGORIEN.find(k=>keys.some(key=>k.name.toLowerCase().includes(key)))?.name || KATEGORIEN[0]?.name || '';
+}
+function categoriesForMonitor(group){
+  const keys=group.keywords.map(k=>String(k).toLowerCase());
+  return KATEGORIEN.filter(k=>keys.some(key=>k.name.toLowerCase().includes(key)));
+}
+function prefillQuickBooking(type){
+  const q=QUICK_BOOKINGS[type];
+  if(!q) return;
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('b-datum').value=today;
+  document.getElementById('b-desc').value=q.desc;
+  document.getElementById('b-betrag').value=q.betrag.toFixed(2);
+  document.getElementById('b-kat').value=findCategoryByKeywords(q.keywords);
+  document.getElementById('b-zahlung').value=q.zahlung;
+  document.getElementById('b-notiz').value='';
+  document.getElementById('b-betrag').focus();
+}
+function isFixkostenKategorie(kat){
+  return KATEGORIEN.some(k=>k.name===kat && k.gruppe==='Fixkosten');
+}
+function getFixkostenDayFromDate(dateValue){
+  const day=parseInt(String(dateValue||'').slice(8,10),10);
+  return Number.isFinite(day) ? Math.min(31,Math.max(1,day)) : 1;
+}
+function readFixkostenDay(inputId,dateValue){
+  const raw=parseInt(document.getElementById(inputId)?.value,10);
+  if(Number.isFinite(raw)) return Math.min(31,Math.max(1,raw));
+  return getFixkostenDayFromDate(dateValue);
+}
+function getRecurringTemplateKey(item){
+  return item.recurringFixkostenKey || ['fixkosten',item.kat,item.desc,Number(item.betrag).toFixed(2),item.zahlung].join('|').toLowerCase();
+}
+function getDateForMonthDay(monat,day){
+  const [year,month]=monat.split('-').map(Number);
+  const lastDay=new Date(year,month,0).getDate();
+  return monat+'-'+String(Math.min(Math.max(1,day),lastDay)).padStart(2,'0');
+}
+function getFixkostenTemplates(){
+  const templates=new Map();
+  buchungen.forEach(b=>{
+    if(b.autoFixkostenGenerated || b.autoFixkostenKey || !isFixkostenKategorie(b.kat) || Number(b.betrag)>=0) return;
+    const key=getRecurringTemplateKey(b);
+    const current=templates.get(key);
+    if(!current || String(b.updatedAt||b.datum||'').localeCompare(String(current.updatedAt||current.datum||''))>0){
+      templates.set(key,b);
+    }
+  });
+  return [...templates.entries()].map(([key,b])=>({key,...b,fixkostenDay:b.fixkostenDay||getFixkostenDayFromDate(b.datum)}));
+}
+function runFixkostenAutomatik(){
+  const now=new Date();
+  const monat=now.toISOString().slice(0,7);
+  const stamp=now.toISOString();
+  let added=0;
+  getFixkostenTemplates().forEach(item=>{
+    const datum=getDateForMonthDay(monat,item.fixkostenDay);
+    const autoKey='fixkosten-'+monat+'-'+item.key;
+    const exists=buchungen.some(b=>b.autoFixkostenKey===autoKey || (b.datum.slice(0,7)===monat && getRecurringTemplateKey(b)===item.key));
+    if(exists) return;
+    buchungen.push({id:nextId++,datum,desc:item.desc,kat:item.kat,betrag:Number(item.betrag),zahlung:item.zahlung,notiz:item.notiz||'Automatische Fixkosten',fixkostenDay:item.fixkostenDay,recurringFixkostenKey:item.key,autoFixkostenGenerated:true,autoFixkostenKey:autoKey,updatedAt:stamp});
+    added++;
+  });
+  localStorage.setItem('autoFixkostenLastMonth',monat);
+  if(added>0) save();
+}
+function renderBudgetMonitor(monat){
+  const el=document.getElementById('budget-monitor-list');
+  if(!el) return;
+  el.innerHTML=BUDGET_MONITOR_GROUPS.map(group=>{
+    const cats=categoriesForMonitor(group);
+    const budget=cats.reduce((sum,k)=>sum+Math.abs(Number(k.budget)||0),0);
+    const ist=cats.reduce((sum,k)=>sum+getIstForMonatKat(monat,k.name),0);
+    const spent=Math.abs(Math.min(0,ist));
+    const rest=budget-spent;
+    const pctVal=budget>0?(spent/budget)*100:0;
+    const color=budgetUsageColor(pctVal);
+    return `<div class="monitor-item"><div class="monitor-head"><div><div class="monitor-title">${esc(group.label)}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${cats.map(k=>esc(k.name)).join(', ')||'Keine Kategorie gefunden'}</div></div><div class="monitor-left ${rest<0?'neg':'pos'}">${eur(rest)}</div></div><div class="prog-bar" style="height:10px"><div class="prog-fill" style="width:${Math.min(pctVal,100)}%;background:${color}"></div></div><div class="monitor-meta"><span>${eur(spent)} von ${eur(budget)} genutzt</span><strong>${pctVal.toFixed(0)}%</strong></div></div>`;
+  }).join('');
+}
+function ampel(budget, ist){
+  if(budget===0) return '<span style="color:var(--muted)">–</span>';
+  const pctVal = budget>0 ? ist/budget : Math.abs(ist)/Math.abs(budget);
+  if(budget>0){
+    if(ist>=budget) return '<span class="badge badge-green">🟢 OK</span>';
+    if(ist>=budget*0.8) return '<span class="badge badge-yellow">🟡 Knapp</span>';
+    return '<span class="badge badge-red">🔴 Überzogen</span>';
+  } else {
+    if(ist===0) return '<span class="badge badge-green">🟢 OK</span>';
+    if(pctVal<=1) return '<span class="badge badge-green">🟢 OK</span>';
+    if(pctVal<=1.1) return '<span class="badge badge-yellow">🟡 Knapp</span>';
+    return '<span class="badge badge-red">🔴 Überzogen</span>';
+  }
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');});
+  const renders={dashboard:renderDashboard,buchungen:renderBuchungen,auswertung:renderAuswertung,budget:renderBudget,jahres:renderJahres,szenario:renderSzenario,sparziel:renderSparziel,kategorien:renderKategorien,sync:renderSync};
+  if(renders[id]) renders[id]();
+}
+
+// ─── MONTH SELECTS ──────────────────────────────────────
+function fillMonthSelects(){
+  const months = getMonths();
+  const allOpt = '<option value="">Alle Monate</option>';
+  ['f-monat'].forEach(id=>{
+    const s=document.getElementById(id);
+    if(s){s.innerHTML=allOpt+months.map(m=>`<option value="${m}">${monatName(m)}</option>`).join('');}
+  });
+  ['dash-month','budget-month'].forEach(id=>{
+    const s=document.getElementById(id);
+    if(s){s.innerHTML=months.map(m=>`<option value="${m}">${monatName(m)}</option>`).join('');s.value=months[0]||'';}
+  });
+  const ks=document.getElementById('f-kat');
+  if(ks) ks.innerHTML='<option value="">Alle Kategorien</option>'+KATEGORIEN.map(k=>`<option value="${esc(k.name)}">${esc(k.name)}</option>`).join('');
+  const bk=document.getElementById('b-kat');
+  if(bk) bk.innerHTML=KATEGORIEN.map(k=>`<option value="${esc(k.name)}">${esc(k.name)}</option>`).join('');
+  const ek=document.getElementById('e-kat');
+  if(ek) ek.innerHTML=KATEGORIEN.map(k=>`<option value="${esc(k.name)}">${esc(k.name)}</option>`).join('');
+  const bd=document.getElementById('b-datum');
+  if(bd && !bd.value) bd.value=new Date().toISOString().slice(0,10);
+}
+
+// ─── DASHBOARD ──────────────────────────────────────────
+let dashPie=null,dashBar=null;
+function renderDashboard(){
+  const m=document.getElementById('dash-month')?.value||getMonths()[0]||'2026-01';
+  const ein=buchungen.filter(b=>b.datum.slice(0,7)===m&&b.betrag>0).reduce((s,b)=>s+b.betrag,0);
+  const aus=buchungen.filter(b=>b.datum.slice(0,7)===m&&b.betrag<0).reduce((s,b)=>s+b.betrag,0);
+  const spar=ein+aus;
+  const quote=ein>0?spar/ein:0;
+  document.getElementById('d-ein').textContent=eur(ein);
+  document.getElementById('d-aus').textContent=eur(aus);
+  document.getElementById('d-spar').textContent=eur(spar);
+  document.getElementById('d-quote').textContent=pct(quote);
+  renderBudgetMonitor(m);
+
+  // Pie
+  const katAus=KATEGORIEN.filter(k=>k.gruppe!=='Einnahmen').map(k=>({name:k.name,val:Math.abs(getIstForMonatKat(m,k.name))})).filter(k=>k.val>0);
+  const pieColors=['#2d6a4f','#e76f51','#457b9d','#e9c46a','#264653','#a8dadc','#6d6875','#b5838d','#e07a5f','#3d405b','#81b29a','#f2cc8f'];
+  if(dashPie){dashPie.destroy();dashPie=null;}
+  const pc=document.getElementById('c-dash-pie').getContext('2d');
+  dashPie=new Chart(pc,{type:'doughnut',data:{labels:katAus.map(k=>k.name.split('(')[0].trim()),datasets:[{data:katAus.map(k=>k.val),backgroundColor:pieColors,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:10},boxWidth:12}}}}});
+
+  // Bar
+  const months=getMonths();const sums=getSumByMonth();
+  if(dashBar){dashBar.destroy();dashBar=null;}
+  const bc=document.getElementById('c-dash-bar').getContext('2d');
+  dashBar=new Chart(bc,{type:'bar',data:{labels:months.map(monatName),datasets:[{label:'Einnahmen',data:months.map(mo=>sums[mo]?.ein||0),backgroundColor:'#2d6a4f33',borderColor:'#2d6a4f',borderWidth:2,borderRadius:4},{label:'Ausgaben',data:months.map(mo=>Math.abs(sums[mo]?.aus||0)),backgroundColor:'#c1121f33',borderColor:'#c1121f',borderWidth:2,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11},boxWidth:12}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11},callback:v=>v.toLocaleString('de-DE')+'€'}}}}});
+
+  // Table
+  const tbody=document.getElementById('dash-tbody');
+  tbody.innerHTML=KATEGORIEN.filter(k=>k.gruppe!=='Einnahmen').map(k=>{
+    const ist=getIstForMonatKat(m,k.name);const bud=k.budget;const diff=ist-bud;
+    const pctV=bud!==0?Math.abs(ist/bud)*100:0;
+    const barCol=budgetUsageColor(pctV);
+    return `<tr><td>${k.name}</td><td class="mono ${ist<0?'neg':'pos'}">${eur(ist)}</td><td class="mono">${eur(bud)}</td><td class="mono ${diff>=0?'pos':'neg'}">${eur(diff)}</td>
+    <td style="min-width:120px"><div style="font-size:11px;margin-bottom:3px">${pctV.toFixed(0)}%</div><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pctV,100)}%;background:${barCol}"></div></div></td>
+    <td>${ampel(bud,ist)}</td></tr>`;
+  }).join('');
+}
+
+// ─── BUCHUNGEN ──────────────────────────────────────────
+function addBuchung(){
+  const dat=document.getElementById('b-datum').value;
+  const desc=document.getElementById('b-desc').value.trim();
+  const kat=document.getElementById('b-kat').value;
+  const bet=parseFloat(document.getElementById('b-betrag').value);
+  const zahl=document.getElementById('b-zahlung').value;
+  const notiz=document.getElementById('b-notiz').value.trim();
+  if(!dat||!desc||isNaN(bet)){alert('Bitte Datum, Beschreibung und Betrag ausfüllen.');return;}
+  buchungen.push({id:nextId++,datum:dat,desc,kat,betrag:bet,zahlung:zahl,notiz,updatedAt:new Date().toISOString()});
+  refreshViews();
+  document.getElementById('b-desc').value='';document.getElementById('b-betrag').value='';document.getElementById('b-notiz').value='';document.getElementById('b-fix-day').value='';
+}
+
+function startEditBuchung(id){
+  const b=buchungen.find(x=>x.id===id);
+  if(!b) return;
+  editingBuchungId=id;
+  fillMonthSelects();
+  const editKat=document.getElementById('e-kat');
+  if(b.kat && !KATEGORIEN.some(k=>k.name===b.kat)) editKat.innerHTML += `<option value="${esc(b.kat)}">${esc(b.kat)}</option>`;
+  document.getElementById('e-datum').value=b.datum;
+  document.getElementById('e-desc').value=b.desc;
+  editKat.value=b.kat;
+  document.getElementById('e-betrag').value=b.betrag;
+  document.getElementById('e-zahlung').value=b.zahlung;
+  document.getElementById('e-notiz').value=b.notiz||'';
+  document.getElementById('e-fix-day').value=b.fixkostenDay||getFixkostenDayFromDate(b.datum);
+  const card=document.getElementById('edit-buchung-card');
+  card.style.display='block';
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function cancelEditBuchung(){
+  editingBuchungId=null;
+  document.getElementById('edit-buchung-card').style.display='none';
+}
+
+function saveBuchungEdit(){
+  const b=buchungen.find(x=>x.id===editingBuchungId);
+  if(!b) return;
+  const dat=document.getElementById('e-datum').value;
+  const desc=document.getElementById('e-desc').value.trim();
+  const kat=document.getElementById('e-kat').value;
+  const bet=parseFloat(document.getElementById('e-betrag').value);
+  const zahl=document.getElementById('e-zahlung').value;
+  const notiz=document.getElementById('e-notiz').value.trim();
+  if(!dat||!desc||isNaN(bet)){alert('Bitte Datum, Beschreibung und Betrag ausfüllen.');return;}
+  Object.assign(b,{datum:dat,desc,kat,betrag:bet,zahlung:zahl,notiz,updatedAt:new Date().toISOString()});
+  cancelEditBuchung();
+  refreshViews();
+}
+
+function deleteBuchung(id){
+  if(!confirm('Buchung löschen?')) return;
+  deletedBuchungIds=[...new Set([...deletedBuchungIds,String(id)])];
+  buchungen=buchungen.filter(b=>b.id!==id);
+  if(editingBuchungId===id) cancelEditBuchung();
+  refreshViews();
+}
+
+function renderBuchungen(){
+  const txt=(document.getElementById('f-text')?.value||'').toLowerCase();
+  const mon=document.getElementById('f-monat')?.value||'';
+  const kat=document.getElementById('f-kat')?.value||'';
+  const zahl=document.getElementById('f-zahlung')?.value||'';
+  let filtered=buchungen.filter(b=>{
+    if(txt && !b.desc.toLowerCase().includes(txt) && !b.kat.toLowerCase().includes(txt)) return false;
+    if(mon && b.datum.slice(0,7)!==mon) return false;
+    if(kat && b.kat!==kat) return false;
+    if(zahl && b.zahlung!==zahl) return false;
+    return true;
+  }).sort((a,b)=>b.datum.localeCompare(a.datum));
+  document.getElementById('b-count').textContent=filtered.length+' Buchungen';
+  const tbody=document.getElementById('b-tbody');
+  tbody.innerHTML=filtered.map(b=>`<tr>
+    <td>${esc(b.datum)}</td><td>${esc(b.desc)}</td>
+    <td><span style="font-size:12px;color:var(--muted)">${esc(b.kat)}</span></td>
+    <td class="mono ${b.betrag>=0?'pos':'neg'}">${eur(b.betrag)}</td>
+    <td><span class="badge badge-blue">${esc(b.zahlung)}</span></td>
+    <td style="font-size:12px;color:var(--muted)">${b.notiz?esc(b.notiz):'–'}</td>
+    <td><div class="action-group"><button class="edit-btn" onclick="startEditBuchung(${b.id})">Bearbeiten</button><button class="del-btn" onclick="deleteBuchung(${b.id})">✕</button></div></td>
+  </tr>`).join('');
+  const mobile=document.getElementById('b-mobile-list');
+  if(mobile) mobile.innerHTML=filtered.map(b=>`<div class="booking-card">
+    <div class="booking-card-top"><div><div class="booking-card-title">${esc(b.desc)}</div><div class="booking-card-date">${esc(b.datum)}</div></div><div class="mono ${b.betrag>=0?'pos':'neg'}" style="font-weight:600;white-space:nowrap">${eur(b.betrag)}</div></div>
+    <div class="booking-card-meta"><div><strong>Kategorie:</strong> ${esc(b.kat)}</div><div><strong>Zahlung:</strong> ${esc(b.zahlung)}</div>${b.notiz?`<div><strong>Notiz:</strong> ${esc(b.notiz)}</div>`:''}</div>
+    <div class="action-group"><button class="edit-btn" onclick="startEditBuchung(${b.id})">Bearbeiten</button><button class="del-btn" onclick="deleteBuchung(${b.id})">✕</button></div>
+  </div>`).join('');
+  const sum=filtered.reduce((s,b)=>s+b.betrag,0);
+  document.getElementById('b-summe').innerHTML=`Summe der angezeigten Buchungen: <strong class="${sum>=0?'pos':'neg'}">${eur(sum)}</strong>`;
+}
+
+// ─── AUSWERTUNG ─────────────────────────────────────────
+let auswertChart=null;
+function renderAuswertung(){
+  const months=getMonths();const sums=getSumByMonth();
+  if(auswertChart){auswertChart.destroy();auswertChart=null;}
+  const ctx=document.getElementById('c-auswert').getContext('2d');
+  const saldo=months.map(m=>(sums[m]?.ein||0)+(sums[m]?.aus||0));
+  auswertChart=new Chart(ctx,{type:'bar',data:{labels:months.map(monatName),datasets:[
+    {label:'Einnahmen',data:months.map(m=>sums[m]?.ein||0),backgroundColor:'#2d6a4f88',borderColor:'#2d6a4f',borderWidth:2,borderRadius:4},
+    {label:'Ausgaben',data:months.map(m=>Math.abs(sums[m]?.aus||0)),backgroundColor:'#c1121f44',borderColor:'#c1121f',borderWidth:2,borderRadius:4},
+    {label:'Saldo',data:saldo,type:'line',borderColor:'#457b9d',backgroundColor:'transparent',borderWidth:2.5,pointRadius:5,pointBackgroundColor:'#457b9d'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11},boxWidth:12}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11},callback:v=>v.toLocaleString('de-DE')+'€'}}}}});
+
+  // Detail table
+  const ausCats=KATEGORIEN.filter(k=>k.gruppe!=='Einnahmen');
+  const thead=`<thead><tr><th>Kategorie</th><th>Gruppe</th>${months.map(m=>`<th>${monatName(m)}</th>`).join('')}<th>Gesamt</th></tr></thead>`;
+  const tbody=ausCats.map(k=>{
+    const vals=months.map(m=>getIstForMonatKat(m,k.name));
+    const tot=vals.reduce((s,v)=>s+v,0);
+    return `<tr><td style="font-size:12px">${k.name}</td><td><span class="badge badge-blue" style="font-size:10px">${k.gruppe}</span></td>${vals.map(v=>`<td class="mono ${v<0?'neg':v>0?'pos':''}">${v!==0?eur(v):'–'}</td>`).join('')}<td class="mono" style="font-weight:600">${eur(tot)}</td></tr>`;
+  }).join('');
+  document.getElementById('auswert-table').innerHTML=thead+'<tbody>'+tbody+'</tbody>';
+}
+
+// ─── BUDGET ─────────────────────────────────────────────
+function renderBudget(){
+  const m=document.getElementById('budget-month')?.value||getMonths()[0]||'2026-01';
+  let totBud=0,totIst=0;
+  const budgetCards=[];
+  const rows=KATEGORIEN.map(k=>{
+    const ist=getIstForMonatKat(m,k.name);
+    const bud=k.budget;
+    const diff=ist-bud;
+    totBud+=bud;totIst+=ist;
+    const pctV=bud!==0?Math.abs(ist/bud)*100:0;
+    const barCol=budgetUsageColor(pctV);
+    budgetCards.push(`<div class="budget-card">
+      <div class="budget-card-head"><div><div class="budget-card-title">${esc(k.name)}</div><span class="badge badge-blue" style="font-size:10px">${esc(k.gruppe)}</span></div><div>${ampel(bud,ist)}</div></div>
+      <div class="budget-card-grid"><div><span>Budget</span><strong class="mono">${eur(bud)}</strong></div><div><span>Ist</span><strong class="mono ${ist<0?'neg':ist>0?'pos':''}">${eur(ist)}</strong></div><div><span>Abw.</span><strong class="mono ${diff>=0?'pos':'neg'}">${eur(diff)}</strong></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Auslastung: ${pctV.toFixed(0)}%</div><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pctV,100)}%;background:${barCol}"></div></div>
+    </div>`);
+    return `<tr><td style="font-size:12px">${k.name}</td><td><span class="badge badge-blue" style="font-size:10px">${k.gruppe}</span></td>
+    <td class="mono">${eur(bud)}</td><td class="mono ${ist<0?'neg':ist>0?'pos':''}">${eur(ist)}</td>
+    <td class="mono ${diff>=0?'pos':'neg'}">${eur(diff)}</td>
+    <td style="min-width:100px"><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(pctV,100)}%;background:${barCol}"></div></div><div style="font-size:10px;color:var(--muted);margin-top:2px">${pctV.toFixed(0)}%</div></td>
+    <td>${ampel(bud,ist)}</td></tr>`;
+  }).join('');
+  document.getElementById('budget-tbody').innerHTML=rows;
+  const mobileBudget=document.getElementById('budget-mobile-list');
+  if(mobileBudget) mobileBudget.innerHTML=budgetCards.join('');
+  document.getElementById('bt-budget').textContent=eur(totBud);
+  document.getElementById('bt-ist').textContent=eur(totIst);
+  document.getElementById('bt-diff').textContent=eur(totIst-totBud);
+
+  const ein=buchungen.filter(b=>b.datum.slice(0,7)===m&&b.betrag>0).reduce((s,b)=>s+b.betrag,0);
+  const aus=buchungen.filter(b=>b.datum.slice(0,7)===m&&b.betrag<0).reduce((s,b)=>s+b.betrag,0);
+  const spar=ein+aus;
+  document.getElementById('budget-kpi').innerHTML=`
+    <div class="card"><div class="stat-label">Einnahmen</div><div class="stat-val green">${eur(ein)}</div></div>
+    <div class="card"><div class="stat-label">Ausgaben</div><div class="stat-val red">${eur(aus)}</div></div>
+    <div class="card"><div class="stat-label">Saldo</div><div class="stat-val ${spar>=0?'blue':'red'}">${eur(spar)}</div></div>`;
+}
+
+// ─── JAHRESÜBERSICHT ────────────────────────────────────
+let jahresChart=null;
+function renderJahres(){
+  const months=['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10','2026-11','2026-12'];
+  const sums=getSumByMonth();
+  let kum=0;let totEin=0,totAus=0,totSpar=0;
+  const monthCards=[];
+  const rows=months.map(m=>{
+    const ein=sums[m]?.ein||0;const aus=sums[m]?.aus||0;const spar=ein+aus;const quote=ein>0?spar/ein:0;
+    kum+=spar;totEin+=ein;totAus+=aus;totSpar+=spar;
+    const hasData=buchungen.some(b=>b.datum.slice(0,7)===m);
+    monthCards.push(`<div class="month-card" style="${!hasData?'opacity:.55':''}">
+      <div class="month-card-head"><div class="month-card-title">${monatName(m)}</div><div class="mono ${spar>0?'pos':spar<0?'neg':''}" style="font-weight:600">${spar!==0?eur(spar):'–'}</div></div>
+      <div class="month-card-grid"><div><span>Einnahmen</span><strong class="mono pos">${ein>0?eur(ein):'–'}</strong></div><div><span>Ausgaben</span><strong class="mono neg">${aus<0?eur(aus):'–'}</strong></div><div><span>Sparquote</span><strong class="mono">${ein>0?pct(quote):'–'}</strong></div><div><span>Kumuliert</span><strong class="mono">${kum!==0?eur(kum):'–'}</strong></div></div>
+    </div>`);
+    return `<tr style="${!hasData?'opacity:.4':''}"><td>${monatName(m)}</td><td class="mono pos">${ein>0?eur(ein):'–'}</td><td class="mono neg">${aus<0?eur(aus):'–'}</td><td class="mono ${spar>0?'pos':spar<0?'neg':''}">${spar!==0?eur(spar):'–'}</td><td class="mono">${ein>0?pct(quote):'–'}</td><td class="mono">${kum!==0?eur(kum):'–'}</td></tr>`;
+  }).join('');
+  document.getElementById('jahres-tbody').innerHTML=rows;
+  const mobileMonths=document.getElementById('jahres-mobile-list');
+  if(mobileMonths) mobileMonths.innerHTML=monthCards.join('');
+  const totQuote=totEin>0?totSpar/totEin:0;
+  document.getElementById('jt-ein').textContent=eur(totEin);
+  document.getElementById('jt-aus').textContent=eur(totAus);
+  document.getElementById('jt-spar').textContent=eur(totSpar);
+  document.getElementById('jt-quote').textContent=pct(totQuote);
+  document.getElementById('jt-kum').textContent=eur(kum);
+
+  if(jahresChart){jahresChart.destroy();jahresChart=null;}
+  const ctx=document.getElementById('c-jahres').getContext('2d');
+  let cumArr=[];let c=0;
+  const einArr=months.map(m=>sums[m]?.ein||0);
+  const ausArr=months.map(m=>Math.abs(sums[m]?.aus||0));
+  months.forEach(m=>{c+=(sums[m]?.ein||0)+(sums[m]?.aus||0);cumArr.push(c);});
+  jahresChart=new Chart(ctx,{data:{labels:months.map(monatName),datasets:[
+    {type:'bar',label:'Einnahmen',data:einArr,backgroundColor:'#2d6a4f66',borderColor:'#2d6a4f',borderWidth:2,borderRadius:4},
+    {type:'bar',label:'Ausgaben',data:ausArr,backgroundColor:'#c1121f44',borderColor:'#c1121f',borderWidth:2,borderRadius:4},
+    {type:'line',label:'Kumuliert',data:cumArr,borderColor:'#e76f51',backgroundColor:'transparent',borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#e76f51',yAxisID:'y2'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11},boxWidth:12}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11},callback:v=>v.toLocaleString('de-DE')+'€'},position:'left'},y2:{ticks:{font:{size:11},callback:v=>v.toLocaleString('de-DE')+'€'},position:'right',grid:{drawOnChartArea:false}}}}});
+}
+
+// ─── SZENARIO ───────────────────────────────────────────
+let szChart=null;
+function renderSzenario(){
+  const months=getMonths();const sums=getSumByMonth();
+  const avgEin=months.length?months.reduce((s,m)=>s+(sums[m]?.ein||0),0)/months.length:6100;
+  const avgAus=months.length?months.reduce((s,m)=>s+(sums[m]?.aus||0),0)/months.length:-2570;
+  const avgSpar=avgEin+avgAus;
+  document.getElementById('sz-ein').textContent=eur(avgEin);
+  document.getElementById('sz-aus').textContent=eur(avgAus);
+  document.getElementById('sz-spar').textContent=eur(avgSpar);
+  document.getElementById('sz-quote').textContent=pct(avgEin>0?avgSpar/avgEin:0);
+
+  const s1=parseFloat(document.getElementById('sz1').value)||0;
+  const s2=parseFloat(document.getElementById('sz2').value)||0;
+  const s3=parseFloat(document.getElementById('sz3').value)||0;
+  const s4=parseFloat(document.getElementById('sz4').value)||0;
+  const newEin=avgEin+s1+s2;
+  const newAus=avgAus+s4-s3;
+  const newSpar=newEin+newAus;
+  const diff=newSpar-avgSpar;
+  document.getElementById('szr-spar').textContent=eur(newSpar);
+  document.getElementById('szr-quote').textContent=pct(newEin>0?newSpar/newEin:0);
+  document.getElementById('szr-diff').textContent=(diff>=0?'+ ':'')+eur(diff);
+  document.getElementById('szr-diff').className='stat-val '+(diff>=0?'green':'red');
+  document.getElementById('szr-ein').textContent=eur(newEin);
+
+  if(szChart){szChart.destroy();szChart=null;}
+  const ctx=document.getElementById('c-szenario').getContext('2d');
+  szChart=new Chart(ctx,{type:'bar',data:{labels:['Ist','Szenario'],datasets:[
+    {label:'Einnahmen',data:[avgEin,newEin],backgroundColor:['#2d6a4f66','#2d6a4faa'],borderColor:'#2d6a4f',borderWidth:2,borderRadius:4},
+    {label:'Ausgaben',data:[Math.abs(avgAus),Math.abs(newAus)],backgroundColor:['#c1121f44','#c1121f88'],borderColor:'#c1121f',borderWidth:2,borderRadius:4},
+    {label:'Sparbetrag',data:[avgSpar,newSpar],backgroundColor:['#457b9d66','#457b9daa'],borderColor:'#457b9d',borderWidth:2,borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11},boxWidth:12}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11},callback:v=>v.toLocaleString('de-DE')+'€'}}}}});
+}
+
+// ─── SPARZIEL ───────────────────────────────────────────
+function renderSparziel(){
+  const ziel=parseFloat(document.getElementById('ziel-bet').value)||15000;
+  const months=getMonths();const sums=getSumByMonth();
+  const totSpar=months.reduce((s,m)=>s+(sums[m]?.ein||0)+(sums[m]?.aus||0),0);
+  const avgRate=months.length?totSpar/months.length:3530;
+  const noch=Math.max(0,ziel-totSpar);
+  const monate=avgRate>0?Math.ceil(noch/avgRate):999;
+  const pctVal=Math.min(100,ziel>0?(totSpar/ziel)*100:0);
+  const now=new Date();
+  const reachDate=new Date(now.getFullYear(),now.getMonth()+monate,1);
+  const monatNames=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  document.getElementById('zp-ist').textContent=eur(totSpar);
+  document.getElementById('zp-ziel').textContent=eur(ziel);
+  document.getElementById('zp-fill').style.width=pctVal+'%';
+  document.getElementById('zp-pct').textContent=pctVal.toFixed(0)+'%';
+  document.getElementById('zp-rate').textContent=eur(avgRate);
+  document.getElementById('zp-noch').textContent=eur(noch);
+  document.getElementById('zp-monate').textContent=monate<999?monate+' Monat(e)':'–';
+  document.getElementById('zp-datum').textContent=monate<999?monatNames[reachDate.getMonth()]+' '+reachDate.getFullYear():'–';
+}
+
+// ─── KATEGORIEN ─────────────────────────────────────────
+function gruppeOptions(value){
+  return ['Einnahmen','Fixkosten','Variable Kosten','Sonstiges'].map(g=>`<option ${g===value?'selected':''}>${g}</option>`).join('');
+}
+
+function addKategorie(){
+  const name=document.getElementById('kat-new-name').value.trim();
+  const gruppe=document.getElementById('kat-new-gruppe').value;
+  const budget=parseFloat(document.getElementById('kat-new-budget').value);
+  if(!name||isNaN(budget)){alert('Bitte Name und Budget ausfüllen.');return;}
+  if(KATEGORIEN.some(k=>k.name.toLowerCase()===name.toLowerCase())){alert('Diese Kategorie gibt es bereits.');return;}
+  KATEGORIEN.push({name,gruppe,budget,updatedAt:new Date().toISOString()});
+  document.getElementById('kat-new-name').value='';
+  document.getElementById('kat-new-budget').value='';
+  refreshViews();
+}
+
+function readKatField(index,field){
+  const desktop=document.getElementById(`kat-${field}-${index}`);
+  const mobile=document.getElementById(`kat-m-${field}-${index}`);
+  return (mobile&&mobile.offsetParent!==null?mobile:desktop)?.value;
+}
+function updateKategorie(index){
+  const old=KATEGORIEN[index];
+  if(!old) return;
+  const name=(readKatField(index,'name')||'').trim();
+  const gruppe=readKatField(index,'gruppe');
+  const budget=parseFloat(readKatField(index,'budget'));
+  if(!name||isNaN(budget)){alert('Bitte Name und Budget ausfüllen.');return;}
+  if(KATEGORIEN.some((k,i)=>i!==index&&k.name.toLowerCase()===name.toLowerCase())){alert('Diese Kategorie gibt es bereits.');return;}
+  const oldName=old.name;
+  KATEGORIEN[index]={name,gruppe,budget,updatedAt:new Date().toISOString()};
+  if(oldName!==name){buchungen.forEach(b=>{if(b.kat===oldName) b.kat=name;});}
+  refreshViews();
+}
+
+function deleteKategorie(index){
+  const kat=KATEGORIEN[index];
+  if(!kat) return;
+  const count=buchungen.filter(b=>b.kat===kat.name).length;
+  if(count>0){alert(`Diese Kategorie wird noch von ${count} Buchung(en) verwendet. Bitte ändere diese Buchungen zuerst.`);return;}
+  if(!confirm('Kategorie löschen?')) return;
+  KATEGORIEN.splice(index,1);
+  refreshViews();
+}
+
+function renderKategorien(){
+  document.getElementById('kat-tbody').innerHTML=KATEGORIEN.map((k,i)=>`<tr>
+    <td><input class="inline-input" id="kat-name-${i}" value="${esc(k.name)}"></td>
+    <td><select class="inline-input" id="kat-gruppe-${i}">${gruppeOptions(k.gruppe)}</select></td>
+    <td><input class="inline-input mono ${k.budget<0?'neg':'pos'}" id="kat-budget-${i}" type="number" step="0.01" value="${k.budget}"></td>
+    <td><div class="action-group"><button class="btn btn-primary btn-small" onclick="updateKategorie(${i})">Speichern</button><button class="del-btn" onclick="deleteKategorie(${i})">✕</button></div></td>
+  </tr>`).join('');
+  const mobile=document.getElementById('kat-mobile-list');
+  if(mobile) mobile.innerHTML=KATEGORIEN.map((k,i)=>`<div class="category-card">
+    <div class="form-grid">
+      <div class="form-group"><label>Kategorie</label><input class="inline-input" id="kat-m-name-${i}" value="${esc(k.name)}"></div>
+      <div class="form-group"><label>Gruppe</label><select class="inline-input" id="kat-m-gruppe-${i}">${gruppeOptions(k.gruppe)}</select></div>
+      <div class="form-group"><label>Monatsbudget (€)</label><input class="inline-input mono ${k.budget<0?'neg':'pos'}" id="kat-m-budget-${i}" type="number" step="0.01" value="${k.budget}"></div>
+    </div>
+    <div class="action-group"><button class="btn btn-primary btn-small" onclick="updateKategorie(${i})">Speichern</button><button class="del-btn" onclick="deleteKategorie(${i})">✕</button></div>
+  </div>`).join('');
+}
+
+function exportBackup(){
+  const payload=getSyncPayload();
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='haushaltsbuch-sicherung-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+function importBackup(input){
+  const file=input.files?.[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(!data||!Array.isArray(data.buchungen)||!Array.isArray(data.kategorien)) throw new Error('Ungültige Sicherungsdatei');
+      if(!confirm('Sicherung importieren? Aktuelle lokale Daten werden mit der Datei zusammengeführt.')) return;
+      applyRemoteData(data);
+      localStorage.setItem('hasUnsyncedChanges','true');
+      updateStatusStrip();
+      alert('Sicherung wurde importiert. Bitte danach mit Google Drive synchronisieren.');
+    }catch(e){alert('Die Sicherungsdatei konnte nicht gelesen werden.');}
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+// ─── GOOGLE DRIVE SYNC ───────────────────────────────────
+const GOOGLE_CLIENT_ID='512676329571-jqqmseran1rq9nq59osp6hhiqlmpskkf.apps.googleusercontent.com';
+const GOOGLE_API_KEY='AIzaSyCHI_m8xTCbZRULxRD41ok0-M2_pIk10Yo';
+const DRIVE_SCOPES='https://www.googleapis.com/auth/drive.file';
+const DRIVE_FOLDER_NAME='Familien-Haushaltsbuch';
+const DRIVE_FILE_NAME='haushaltsbuch-daten.json';
+let tokenClient=null;
+let gapiReady=true;
+let gisReady=false;
+let driveAccessToken='';
+let driveFileId=localStorage.getItem('driveFileId')||'';
+let driveLastSync=localStorage.getItem('driveLastSync')||'';
+
+function initGoogleLibraries(){
+  handleOAuthRedirect();
+  gisReady=true;
+  renderSync();
+}
+function gisLoaded(){
+  if(gisReady || !window.google?.accounts?.oauth2) return;
+  tokenClient=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:DRIVE_SCOPES,callback:(resp)=>{
+    if(resp.error){setSyncStatus('Anmeldung fehlgeschlagen: '+resp.error);return;}
+    driveAccessToken=resp.access_token;
+    setSyncStatus('Verbunden');renderSync();
+  }});
+  gisReady=true;renderSync();
+}
+function handleOAuthRedirect(){
+  if(!location.hash.includes('access_token=')) return;
+  const params=new URLSearchParams(location.hash.slice(1));
+  const token=params.get('access_token');
+  if(token){
+    driveAccessToken=token;
+    history.replaceState(null,'',location.origin+location.pathname+location.search);
+    setSyncStatus('Verbunden');
+  }
+}
+function setSyncStatus(text){const el=document.getElementById('sync-status');if(el) el.textContent=text;}
+function renderSync(){
+  updateStatusStrip();
+  const status=driveAccessToken?'Verbunden':(gapiReady&&gisReady?'Bereit':'Wird geladen...');
+  const s=document.getElementById('sync-status');if(s) s.textContent=status;
+  const f=document.getElementById('sync-file');if(f) f.textContent=driveFileId?DRIVE_FILE_NAME:'Noch nicht erstellt';
+  const l=document.getElementById('sync-last');if(l) l.textContent=driveLastSync?new Date(driveLastSync).toLocaleString('de-DE'):'-';
+}
+function connectDrive(){
+  const redirectUri=location.origin+location.pathname;
+  const authUrl=new URL('https://accounts.google.com/o/oauth2/v2/auth');
+  authUrl.searchParams.set('client_id',GOOGLE_CLIENT_ID);
+  authUrl.searchParams.set('redirect_uri',redirectUri);
+  authUrl.searchParams.set('response_type','token');
+  authUrl.searchParams.set('scope',DRIVE_SCOPES);
+  authUrl.searchParams.set('include_granted_scopes','true');
+  authUrl.searchParams.set('prompt','consent');
+  location.href=authUrl.toString();
+}
+function signOutDrive(){
+  if(driveAccessToken && window.google?.accounts?.oauth2) google.accounts.oauth2.revoke(driveAccessToken,()=>{});
+  driveAccessToken='';driveFileId='';
+  localStorage.removeItem('driveFileId');
+  renderSync();
+}
+async function ensureDriveConnected(){
+  if(driveAccessToken) return true;
+  connectDrive();
+  setSyncStatus('Bitte Google-Anmeldung abschließen und danach erneut synchronisieren.');
+  return false;
+}
+function driveQueryValue(v){return String(v).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+async function driveFetch(url,options={}){
+  const res=await fetch(url,{...options,headers:{Authorization:'Bearer '+driveAccessToken,...(options.headers||{})}});
+  if(!res.ok) throw new Error(await res.text());
+  return res;
+}
+async function driveList(q,fields){
+  const params=new URLSearchParams({q,fields,spaces:'drive',includeItemsFromAllDrives:'true',supportsAllDrives:'true'});
+  const res=await driveFetch('https://www.googleapis.com/drive/v3/files?'+params.toString());
+  return await res.json();
+}
+async function findOrCreateDriveFolder(){
+  const q=`name='${driveQueryValue(DRIVE_FOLDER_NAME)}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  const found=await driveList(q,'files(id,name)');
+  if(found.files?.length) return found.files[0].id;
+  const created=await driveFetch('https://www.googleapis.com/drive/v3/files?fields=id',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:DRIVE_FOLDER_NAME,mimeType:'application/vnd.google-apps.folder'})});
+  return (await created.json()).id;
+}
+async function findDriveDataFile(folderId){
+  if(driveFileId) return driveFileId;
+  const q=`name='${driveQueryValue(DRIVE_FILE_NAME)}' and '${folderId}' in parents and trashed=false`;
+  const found=await driveList(q,'files(id,name,modifiedTime)');
+  if(found.files?.length){driveFileId=found.files[0].id;localStorage.setItem('driveFileId',driveFileId);return driveFileId;}
+  return '';
+}
+function getSyncPayload(){
+  const now=new Date().toISOString();
+  return {version:1,updatedAt:now,kategorien:KATEGORIEN,buchungen,deletedBuchungIds};
+}
+async function readDriveJson(fileId){
+  if(!fileId) return null;
+  try{
+    const res=await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&supportsAllDrives=true`);
+    return await res.json();
+  }catch(e){return null;}
+}
+function mergeById(localItems,remoteItems,deletedIds){
+  const map=new Map();
+  [...(remoteItems||[]),...(localItems||[])].forEach(item=>{
+    if(!item||deletedIds.includes(String(item.id))) return;
+    const id=String(item.id);
+    const existing=map.get(id);
+    const a=Date.parse(item.updatedAt||item.datum||0)||0;
+    const b=Date.parse(existing?.updatedAt||existing?.datum||0)||0;
+    if(!existing||a>=b) map.set(id,item);
+  });
+  return [...map.values()].sort((a,b)=>String(a.datum||'').localeCompare(String(b.datum||''))||String(a.id).localeCompare(String(b.id)));
+}
+function mergeCategories(localItems,remoteItems){
+  const map=new Map();
+  [...(remoteItems||[]),...(localItems||[])].forEach(item=>{
+    if(!item?.name) return;
+    const key=item.name.toLowerCase();
+    const existing=map.get(key);
+    const a=Date.parse(item.updatedAt||0)||0;
+    const b=Date.parse(existing?.updatedAt||0)||0;
+    if(!existing||a>=b) map.set(key,item);
+  });
+  return [...map.values()];
+}
+function applyRemoteData(remote){
+  if(!remote) return;
+  const deleted=[...new Set([...(deletedBuchungIds||[]),...(remote.deletedBuchungIds||[])].map(String))];
+  deletedBuchungIds=deleted;
+  buchungen=mergeById(buchungen,remote.buchungen||[],deleted);
+  KATEGORIEN=mergeCategories(KATEGORIEN,remote.kategorien||[]);
+  nextId=buchungen.length?Math.max(...buchungen.map(b=>Number(b.id)||0))+1:0;
+  save();fillMonthSelects();renderCurrentPage();
+}
+async function uploadDriveJson(fileId,folderId,payload){
+  const metadata=fileId?{}:{name:DRIVE_FILE_NAME,mimeType:'application/json',parents:[folderId]};
+  const method=fileId?'PATCH':'POST';
+  const url=fileId?`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart&supportsAllDrives=true`:'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id';
+  const boundary='haushaltsbuch_boundary_'+Date.now();
+  const body='--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(metadata)+'\r\n--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(payload,null,2)+'\r\n--'+boundary+'--';
+  const res=await fetch(url,{method,headers:{Authorization:'Bearer '+driveAccessToken,'Content-Type':'multipart/related; boundary='+boundary},body});
+  if(!res.ok) throw new Error(await res.text());
+  return await res.json();
+}
+async function syncDrive(){
+  try{
+    if(!await ensureDriveConnected()) return;
+    setSyncStatus('Synchronisiere...');
+    const folderId=await findOrCreateDriveFolder();
+    const fileId=await findDriveDataFile(folderId);
+    const remote=await readDriveJson(fileId);
+    applyRemoteData(remote);
+    const uploaded=await uploadDriveJson(fileId,folderId,getSyncPayload());
+    if(uploaded.id){driveFileId=uploaded.id;localStorage.setItem('driveFileId',driveFileId);}
+    driveLastSync=new Date().toISOString();
+    localStorage.setItem('driveLastSync',driveLastSync);
+    localStorage.setItem('hasUnsyncedChanges','false');
+    setSyncStatus('Synchronisiert');renderSync();updateStatusStrip();
+  }catch(e){console.error(e);setSyncStatus('Fehler beim Sync. Details in der Browser-Konsole.');}
+}
+
+// ─── INIT ───────────────────────────────────────────────
+runFixkostenAutomatik();
+fillMonthSelects();
+renderDashboard();
+initGoogleLibraries();
+updateStatusStrip();
+window.addEventListener('online',updateStatusStrip);
+window.addEventListener('offline',updateStatusStrip);
+if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js').catch(()=>{});}
+</script>
+</body>
+</html>
